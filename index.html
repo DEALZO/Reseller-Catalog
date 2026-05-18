@@ -1,147 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="https://raw.githubusercontent.com/mahmedkhan7878-stack/Reseller-Catalog/main/WhatsApp%20Image%202026-05-18%20at%2009.41.54.jpeg">
-<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/mahmedkhan7878-stack/Reseller-Catalog/main/WhatsApp%20Image%202026-05-18%20at%2009.41.54.jpeg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reseller Catalog</title>
+<link rel="icon" href="https://raw.githubusercontent.com/mahmedkhan7878-stack/Reseller-Catalog/main/logo.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/mahmedkhan7878-stack/Reseller-Catalog/main/logo.png">
 <style>
-body{font-family:Arial,sans-serif;margin:0;background:#f5f5f5}
-header{background:#2563eb;color:white;padding:15px;text-align:center}
-input,select{width:90%;padding:10px;margin:10px 5%;border:1px solid #ddd;border-radius:8px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:12px}
-.card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.1);cursor:pointer;transition:0.2s}
-.card:hover{transform:scale(1.02)}
-.card img{width:100%;height:160px;object-fit:cover}
-.card h3{font-size:16px;margin:8px}
-.card p{margin:8px;color:#2563eb;font-weight:bold}
-.loading{text-align:center;padding:40px;color:#666}
+  body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
+  header { background: #2874f0; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
+ .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
+ .card { background: white; border-radius: 8px; padding: 10px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; }
+ .card:hover { transform: translateY(-3px); }
+ .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; }
+ .card h3 { font-size: 14px; margin: 8px 0 4px; }
+ .card p { color: #2874f0; font-weight: bold; margin: 0; }
 
-/* Modal styles */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;overflow-y:auto}
-.modal-content{background:white;margin:20px auto;padding:0;max-width:500px;border-radius:12px;overflow:hidden}
-.modal-header{background:#2563eb;color:white;padding:15px;display:flex;justify-content:space-between;align-items:center}
-.modal-header h3{margin:0}
-.close{font-size:28px;font-weight:bold;cursor:pointer}
-.modal-body{padding:15px}
-.modal-images{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}
-.modal-images img{width:120px;height:120px;object-fit:cover;border-radius:8px;flex-shrink:0}
-.modal-body p{margin:8px 0;color:#333;line-height:1.5}
-.price{font-size:22px;color:#2563eb;font-weight:bold;margin:12px 0}
-button{width:100%;margin:8px 0;padding:12px;background:#25D366;color:white;border:none;border-radius:8px;font-weight:bold;cursor:pointer;font-size:15px}
-button:hover{background:#20b358}
+ .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
+ .modal-content { background: white; width: 90%; max-width: 500px; margin: 50px auto; border-radius: 10px; padding: 20px; position: relative; }
+ .close { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
+ .image-scroll { display: flex; gap: 10px; overflow-x: auto; margin: 15px 0; }
+ .image-scroll img { width: 120px; height: 120px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+ .price { color: #2874f0; font-size: 22px; font-weight: bold; }
+ .btn-whatsapp { background: #25D366; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 15px; }
 </style>
 </head>
 <body>
-<header><h2>Superb Deals Catalog</h2></header>
 
-<input type="text" id="search" placeholder="Search products...">
-<select id="category"><option value="">All Categories</option></select>
+<header>Reseller Catalog</header>
+<div class="grid" id="grid"></div>
 
-<div id="products" class="loading">Loading products...</div>
-
-<!-- Product Detail Modal -->
-<div id="productModal" class="modal">
+<div class="modal" id="modal">
   <div class="modal-content">
-    <div class="modal-header">
-      <h3 id="modalTitle">Product</h3>
-      <span class="close" onclick="closeModal()">&times;</span>
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2 id="modalTitle"></h2>
+    <div class="image-scroll">
+      <img id="img1">
+      <img id="img2">
+      <img id="img3">
+      <img id="img4">
     </div>
-    <div class="modal-body" id="modalBody">
-    </div>
+    <p class="price" id="modalPrice"></p>
+    <p id="modalStock"></p>
+    <p id="modalCategory"></p>
+    <p id="modalDesc"></p>
+    <button class="btn-whatsapp" onclick="orderWhatsApp()">Order on WhatsApp</button>
   </div>
 </div>
 
 <script>
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTs1Tzfl93ZoAyrQRAF-RBq5lx6umpdDUnj8K3AT9LQx_FybHGRfe4tv9moie4QZ6GHpR5rSp81Eqx6/pub?output=csv";
-let products = [];
+let products = [
+  {"Product Name":"Men's Cotton T-Shirt","Price":"850","Image1":"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400","Category":"Clothing","Stock":"120","Description":"Soft breathable cotton t-shirt for daily wear","Image2":"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=401","Image3":"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=402","Image4":"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=403"},
+  {"Product Name":"Women's Lawn Kurti","Price":"1200","Image1":"https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400","Category":"Women's Wear","Stock":"85","Description":"3-piece unstitched lawn suit","Image2":"https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=401","Image3":"https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=402","Image4":"https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=403"},
+  {"Product Name":"Bluetooth Earbuds","Price":"2200","Image1":"https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400","Category":"Electronics","Stock":"200","Description":"Wireless earbuds with 20hr battery","Image2":"https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=401","Image3":"https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=402","Image4":"https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=403"},
+  {"Product Name":"Kitchen Knife Set","Price":"1800","Image1":"https://images.unsplash.com/photo-1593614271567-4e18a7d4f5d4?w=400","Category":"Kitchen","Stock":"60","Description":"5-piece stainless steel knife set","Image2":"https://images.unsplash.com/photo-1593614271567-4e18a7d4f5d4?w=401","Image3":"https://images.unsplash.com/photo-1593614271567-4e18a7d4f5d4?w=402","Image4":"https://images.unsplash.com/photo-1593614271567-4e18a7d4f5d4?w=403"},
+  {"Product Name":"LED Bulb 12W","Price":"350","Image1":"https://images.unsplash.com/photo-1550009158-9eb30f54d3a1?w=400","Category":"Home Appliances","Stock":"300","Description":"Energy saving LED bulb","Image2":"https://images.unsplash.com/photo-1550009158-9eb30f54d3a1?w=401","Image3":"https://images.unsplash.com/photo-1550009158-9eb30f54d3a1?w=402","Image4":"https://images.unsplash.com/photo-1550009158-9eb30f54d3a1?w=403"},
+  {"Product Name":"School Backpack","Price":"950","Image1":"https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=400","Category":"Bags","Stock":"90","Description":"Waterproof school bag for kids","Image2":"https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=401","Image3":"https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=402","Image4":"https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=403"},
+  {"Product Name":"Wall Clock","Price":"650","Image1":"https://images.unsplash.com/photo-1563861826100-9cb868fdbe5c?w=400","Category":"Home Decor","Stock":"150","Description":"Modern wall clock 12 inch","Image2":"https://images.unsplash.com/photo-1563861826100-9cb868fdbe5c?w=401","Image3":"https://images.unsplash.com/photo-1563861826100-9cb868fdbe5c?w=402","Image4":"https://images.unsplash.com/photo-1563861826100-9cb868fdbe5c?w=403"},
+  {"Product Name":"Face Wash","Price":"450","Image1":"https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=400","Category":"Beauty","Stock":"200","Description":"Gentle face wash for all skin types","Image2":"https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=401","Image3":"https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=402","Image4":"https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=403"},
+  {"Product Name":"Phone Stand","Price":"300","Image1":"https://images.unsplash.com/photo-1629131726692-1accd0c53aab?w=400","Category":"Accessories","Stock":"400","Description":"Adjustable mobile phone stand","Image2":"https://images.unsplash.com/photo-1629131726692-1accd0c53aab?w=401","Image3":"https://images.unsplash.com/photo-1629131726692-1accd0c53aab?w=402","Image4":"https://images.unsplash.com/photo-1629131726692-1accd0c53aab?w=403"},
+  {"Product Name":"Water Bottle 1L","Price":"400","Image1":"https://images.unsplash.com/photo-1600271775774-5a50b7b6a7c0?w=400","Category":"Kitchen","Stock":"250","Description":"Leak proof stainless steel bottle","Image2":"https://images.unsplash.com/photo-1600271775774-5a50b7b6a7c0?w=401","Image3":"https://images.unsplash.com/photo-1600271775774-5a50b7b6a7c0?w=402","Image4":"https://images.unsplash.com/photo-1600271775774-5a50b7b6a7c0?w=403"},
+  {"Product Name":"Men's Jeans","Price":"2100","Image1":"https://images.unsplash.com/photo-1542272604-787c3835535d?w=400","Category":"Clothing","Stock":"70","Description":"Slim fit denim jeans","Image2":"https://images.unsplash.com/photo-1542272604-787c3835535d?w=401","Image3":"https://images.unsplash.com/photo-1542272604-787c3835535d?w=402","Image4":"https://images.unsplash.com/photo-1542272604-787c3835535d?w=403"},
+  {"Product Name":"Electric Kettle 1.8L","Price":"1800","Image1":"https://images.unsplash.com/photo-1595535873420-a599195b3f4a?w=400","Category":"Kitchen Appliances","Stock":"90","Description":"Auto cut-off electric kettle","Image2":"https://images.unsplash.com/photo-1595535873420-a599195b3f4a?w=401","Image3":"https://images.unsplash.com/photo-1595535873420-a599195b3f4a?w=402","Image4":"https://images.unsplash.com/photo-1595535873420-a599195b3f4a?w=403"},
+  {"Product Name":"Blender 400W","Price":"3200","Image1":"https://images.unsplash.com/photo-1585238341414-fac12eb648ff?w=400","Category":"Kitchen Appliances","Stock":"40","Description":"2-in-1 electric blender","Image2":"https://images.unsplash.com/photo-1585238341414-fac12eb648ff?w=401","Image3":"https://images.unsplash.com/photo-1585238341414-fac12eb648ff?w=402","Image4":"https://images.unsplash.com/photo-1585238341414-fac12eb648ff?w=403"}
+];
 
-fetch(CSV_URL)
-.then(res => res.text())
-.then(csv => {
-    const rows = csv.split('\n').slice(1);
-    products = rows.map(row => {
-      const cols = row.split(',');
-      return {
-        name: cols[0] || '',
-        price: cols[1] || '',
-        image: cols[2] || '',
-        category: cols[3] || '',
-        stock: cols[4] || '',
-        description: cols[5] || 'No description available',
-        img2: cols[6] || '',
-        img3: cols[7] || '',
-        img4: cols[8] || ''
-      }
-    }).filter(p => p.name);
-    
-    renderProducts(products);
-    loadCategories();
-  })
-.catch(err => {
-    document.getElementById('products').innerHTML = '<div class="loading">Error loading products. Check if Sheet is published as CSV.</div>';
+function displayProducts() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  products.forEach((p, index) => {
+    grid.innerHTML += `
+      <div class="card" onclick="showProduct(${index})">
+        <img src="${p.Image1}">
+        <h3>${p['Product Name']}</h3>
+        <p>Rs ${p.Price}</p>
+      </div>
+    `;
   });
-
-function renderProducts(list){
-  document.getElementById('products').innerHTML = '<div class="grid">' + list.map((p, i) => `
-    <div class="card" onclick="openModal(${i})">
-      <img src="${p.image}" onerror="this.src='https://via.placeholder.com/160'">
-      <h3>${p.name}</h3>
-      <p>Rs ${p.price}</p>
-    </div>
-  `).join('') + '</div>';
 }
 
-function openModal(index){
+function showProduct(index) {
   const p = products[index];
-  const images = [p.image, p.img2, p.img3, p.img4].filter(img => img && img.trim()!== '');
-  
-  document.getElementById('modalTitle').textContent = p.name;
-  document.getElementById('modalBody').innerHTML = `
-    <div class="modal-images">
-      ${images.map(img => `<img src="${img}" onerror="this.style.display='none'">`).join('')}
-    </div>
-    <div class="price">Rs ${p.price}</div>
-    <p><strong>Stock:</strong> ${p.stock}</p>
-    <p><strong>Category:</strong> ${p.category}</p>
-    <p>${p.description}</p>
-    <button onclick="orderWhatsApp('${p.name}', '${p.price}')">Order on WhatsApp</button>
-  `;
-  document.getElementById('productModal').style.display = 'block';
+  document.getElementById('modalTitle').innerText = p['Product Name'];
+  document.getElementById('modalPrice').innerText = 'Rs ' + p.Price;
+  document.getElementById('modalStock').innerText = 'Stock: ' + p.Stock;
+  document.getElementById('modalCategory').innerText = 'Category: ' + p.Category;
+  document.getElementById('modalDesc').innerText = p.Description;
+  document.getElementById('img1').src = p.Image1;
+  document.getElementById('img2').src = p.Image2;
+  document.getElementById('img3').src = p.Image3;
+  document.getElementById('img4').src = p.Image4;
+  document.getElementById('modal').style.display = 'block';
 }
 
-function closeModal(){
-  document.getElementById('productModal').style.display = 'none';
+function closeModal() {
+  document.getElementById('modal').style.display = 'none';
 }
 
-function orderWhatsApp(name, price){
-  const phone = "923367672293";
-  const msg = `Hi, I want to order:%0AProduct: ${name}%0APrice: Rs ${price}`;
-  window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+function orderWhatsApp() {
+  const p = document.getElementById('modalTitle').innerText;
+  const price = document.getElementById('modalPrice').innerText;
+  const msg = `Hi, I want to order ${p} - ${price}`;
+  window.open(`https://wa.me/923001234567?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-function loadCategories(){
-  const cats = [...new Set(products.map(p => p.category).filter(c => c))];
-  document.getElementById('category').innerHTML += cats.map(c => `<option>${c}</option>`).join('');
-}
-
-document.getElementById('search').addEventListener('input', e => {
-  const q = e.target.value.toLowerCase();
-  renderProducts(products.filter(p => p.name.toLowerCase().includes(q)));
-});
-
-document.getElementById('category').addEventListener('change', e => {
-  const cat = e.target.value;
-  renderProducts(cat? products.filter(p => p.category === cat) : products);
-});
-
-// Close modal when clicking outside
-window.onclick = function(event) {
-  const modal = document.getElementById('productModal');
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-}
+displayProducts();
 </script>
+
 </body>
 </html>
