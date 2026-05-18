@@ -8,12 +8,25 @@ body{font-family:Arial,sans-serif;margin:0;background:#f5f5f5}
 header{background:#2563eb;color:white;padding:15px;text-align:center}
 input,select{width:90%;padding:10px;margin:10px 5%;border:1px solid #ddd;border-radius:8px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:12px}
-.card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.1);cursor:pointer;transition:0.2s}
+.card:hover{transform:scale(1.02)}
 .card img{width:100%;height:160px;object-fit:cover}
 .card h3{font-size:16px;margin:8px}
 .card p{margin:8px;color:#2563eb;font-weight:bold}
 .loading{text-align:center;padding:40px;color:#666}
-button{width:calc(100% - 16px);margin:8px;padding:10px;background:#25D366;color:white;border:none;border-radius:8px;font-weight:bold;cursor:pointer;font-size:14px}
+
+/* Modal styles */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;overflow-y:auto}
+.modal-content{background:white;margin:20px auto;padding:0;max-width:500px;border-radius:12px;overflow:hidden}
+.modal-header{background:#2563eb;color:white;padding:15px;display:flex;justify-content:space-between;align-items:center}
+.modal-header h3{margin:0}
+.close{font-size:28px;font-weight:bold;cursor:pointer}
+.modal-body{padding:15px}
+.modal-images{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}
+.modal-images img{width:120px;height:120px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.modal-body p{margin:8px 0;color:#333;line-height:1.5}
+.price{font-size:22px;color:#2563eb;font-weight:bold;margin:12px 0}
+button{width:100%;margin:8px 0;padding:12px;background:#25D366;color:white;border:none;border-radius:8px;font-weight:bold;cursor:pointer;font-size:15px}
 button:hover{background:#20b358}
 </style>
 </head>
@@ -25,9 +38,20 @@ button:hover{background:#20b358}
 
 <div id="products" class="loading">Loading products...</div>
 
+<!-- Product Detail Modal -->
+<div id="productModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Product</h3>
+      <span class="close" onclick="closeModal()">&times;</span>
+    </div>
+    <div class="modal-body" id="modalBody">
+    </div>
+  </div>
+</div>
+
 <script>
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTs1Tzfl93ZoAyrQRAF-RBq5lx6umpdDUnj8K3AT9LQx_FybHGRfe4tv9moie4QZ6GHpR5rSp81Eqx6/pub?output=csv";
-
 let products = [];
 
 fetch(CSV_URL)
@@ -37,12 +61,15 @@ fetch(CSV_URL)
     products = rows.map(row => {
       const cols = row.split(',');
       return {
-        name: cols[0],
-        price: cols[1],
-        image: cols[2],
-        category: cols[3],
-        stock: cols[4],
-        description: cols[5]
+        name: cols[0] || '',
+        price: cols[1] || '',
+        image: cols[2] || '',
+        category: cols[3] || '',
+        stock: cols[4] || '',
+        description: cols[5] || 'No description available',
+        img2: cols[6] || '',
+        img3: cols[7] || '',
+        img4: cols[8] || ''
       }
     }).filter(p => p.name);
     
@@ -54,18 +81,39 @@ fetch(CSV_URL)
   });
 
 function renderProducts(list){
-  document.getElementById('products').innerHTML = '<div class="grid">' + list.map(p => `
-    <div class="card">
+  document.getElementById('products').innerHTML = '<div class="grid">' + list.map((p, i) => `
+    <div class="card" onclick="openModal(${i})">
       <img src="${p.image}" onerror="this.src='https://via.placeholder.com/160'">
       <h3>${p.name}</h3>
       <p>Rs ${p.price}</p>
-      <button onclick="orderWhatsApp('${p.name}', '${p.price}')">Order on WhatsApp</button>
     </div>
   `).join('') + '</div>';
 }
 
+function openModal(index){
+  const p = products[index];
+  const images = [p.image, p.img2, p.img3, p.img4].filter(img => img && img.trim()!== '');
+  
+  document.getElementById('modalTitle').textContent = p.name;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-images">
+      ${images.map(img => `<img src="${img}" onerror="this.style.display='none'">`).join('')}
+    </div>
+    <div class="price">Rs ${p.price}</div>
+    <p><strong>Stock:</strong> ${p.stock}</p>
+    <p><strong>Category:</strong> ${p.category}</p>
+    <p>${p.description}</p>
+    <button onclick="orderWhatsApp('${p.name}', '${p.price}')">Order on WhatsApp</button>
+  `;
+  document.getElementById('productModal').style.display = 'block';
+}
+
+function closeModal(){
+  document.getElementById('productModal').style.display = 'none';
+}
+
 function orderWhatsApp(name, price){
-  const phone = "923367672293"; // Your WhatsApp number
+  const phone = "923367672293";
   const msg = `Hi, I want to order:%0AProduct: ${name}%0APrice: Rs ${price}`;
   window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
 }
@@ -84,6 +132,14 @@ document.getElementById('category').addEventListener('change', e => {
   const cat = e.target.value;
   renderProducts(cat? products.filter(p => p.category === cat) : products);
 });
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('productModal');
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
 </script>
 </body>
 </html>
