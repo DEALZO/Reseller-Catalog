@@ -55,18 +55,28 @@ let products = [
   {"Product Name":"Kitchen Knife Set","Price":"1800","Image1":"https://images.unsplash.com/photo-1593614271567-4e18a7d4f5d4?w=400","Category":"Kitchen","Stock":"60","Description":"5-piece stainless steel knife set","Image2":"https://images.unsplash.com/photo-1593614271567-4e18a7d4f5d4?w=401","Image3":"https://images.unsplash.com/photo-1593614271567-4e18a7d4f5d4?w=402","Image4":"https://images.unsplash.com/photo-1593614271567-4e18a7d4f5d4?w=403"}
 ];
 let currentCategory = 'All';
+
 function buildFilters() {
   const categories = ['All',...new Set(products.map(p => p.Category))];
   const filterBar = document.getElementById('filterBar');
   filterBar.innerHTML = categories.map(cat =>
-    `<button class="filter-btn ${cat === currentCategory? 'active' : ''}" onclick="filterProducts('${cat.replace(/'/g, "\\'")}')">${cat}</button>`
+    `<button class="filter-btn ${cat === currentCategory? 'active' : ''}" data-cat="${cat}">${cat}</button>`
   ).join('');
+
+  // add click event after buttons are created
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      filterProducts(e.target.dataset.cat);
+    });
+  });
 }
+
 function filterProducts(category) {
   currentCategory = category;
   buildFilters();
   displayProducts();
 }
+
 function displayProducts() {
   const grid = document.getElementById('grid');
   const filtered = currentCategory === 'All'? products : products.filter(p => p.Category === currentCategory);
@@ -75,6 +85,7 @@ function displayProducts() {
     grid.innerHTML += `<div class="card" onclick='showProduct(${JSON.stringify(p)})'><img src="${p.Image1}"><h3>${p['Product Name']}</h3><p class="cat">${p.Category}</p><p>Rs ${p.Price}</p></div>`;
   });
 }
+
 function showProduct(p) {
   document.getElementById('modalTitle').innerText = p['Product Name'];
   document.getElementById('modalPrice').innerText = 'Rs ' + p.Price;
@@ -87,15 +98,18 @@ function showProduct(p) {
   document.getElementById('img4').src = p.Image4;
   document.getElementById('modal').style.display = 'block';
 }
+
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
 }
+
 function orderWhatsApp() {
   const p = document.getElementById('modalTitle').innerText;
   const price = document.getElementById('modalPrice').innerText;
   const msg = `Hi, I want to order ${p} - ${price}`;
   window.open(`https://wa.me/923001234567?text=${encodeURIComponent(msg)}`, '_blank');
 }
+
 buildFilters();
 displayProducts();
 </script>
