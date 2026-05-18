@@ -9,30 +9,9 @@
 <style>
   body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
   header { background: #2874f0; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
-
-.filter-bar {
-    display: flex;
-    gap: 10px;
-    padding: 10px 15px;
-    overflow-x: auto;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-.filter-btn {
-    padding: 8px 16px;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    background: white;
-    cursor: pointer;
-    white-space: nowrap;
-    font-size: 14px;
-  }
-.filter-btn.active {
-    background: #2874f0;
-    color: white;
-    border-color: #2874f0;
-  }
-
+.filter-bar { display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
+.filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
 .card { background: white; border-radius: 8px; padding: 10px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; }
 .card:hover { transform: translateY(-3px); }
@@ -40,7 +19,6 @@
 .card h3 { font-size: 14px; margin: 8px 0 4px; }
 .card.cat { font-size: 12px; color: #666; margin: 0 0 4px 0; }
 .card p { color: #2874f0; font-weight: bold; margin: 0; }
-
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
 .modal-content { background: white; width: 90%; max-width: 500px; margin: 50px auto; border-radius: 10px; padding: 20px; position: relative; }
 .close { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
@@ -51,12 +29,9 @@
 </style>
 </head>
 <body>
-
 <header>Reseller Catalog</header>
-
 <div class="filter-bar" id="filterBar"></div>
 <div class="grid" id="grid"></div>
-
 <div class="modal" id="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal()">&times;</span>
@@ -74,7 +49,6 @@
     <button class="btn-whatsapp" onclick="orderWhatsApp()">Order on WhatsApp</button>
   </div>
 </div>
-
 <script>
 let products = [
   {"Product Name":"Men's Cotton T-Shirt","Price":"850","Image1":"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400","Category":"Clothing","Stock":"120","Description":"Soft breathable cotton t-shirt for daily wear","Image2":"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=401","Image3":"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=402","Image4":"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=403"},
@@ -91,42 +65,26 @@ let products = [
   {"Product Name":"Electric Kettle 1.8L","Price":"1800","Image1":"https://images.unsplash.com/photo-1595535873420-a599195b3f4a?w=400","Category":"Kitchen Appliances","Stock":"90","Description":"Auto cut-off electric kettle","Image2":"https://images.unsplash.com/photo-1595535873420-a599195b3f4a?w=401","Image3":"https://images.unsplash.com/photo-1595535873420-a599195b3f4a?w=402","Image4":"https://images.unsplash.com/photo-1595535873420-a599195b3f4a?w=403"},
   {"Product Name":"Blender 400W","Price":"3200","Image1":"https://images.unsplash.com/photo-1585238341414-fac12eb648ff?w=400","Category":"Kitchen Appliances","Stock":"40","Description":"2-in-1 electric blender","Image2":"https://images.unsplash.com/photo-1585238341414-fac12eb648ff?w=401","Image3":"https://images.unsplash.com/photo-1585238341414-fac12eb648ff?w=402","Image4":"https://images.unsplash.com/photo-1585238341414-fac12eb648ff?w=403"}
 ];
-
 let currentCategory = 'All';
-
 function buildFilters() {
   const categories = ['All',...new Set(products.map(p => p.Category))];
   const filterBar = document.getElementById('filterBar');
-  filterBar.innerHTML = categories.map(cat =>
-    `<button class="filter-btn ${cat === currentCategory? 'active' : ''}" onclick="filterProducts('${cat}')">${cat}</button>`
-  ).join('');
+  filterBar.innerHTML = categories.map(cat => `<button class="filter-btn ${cat === currentCategory? 'active' : ''}" onclick="filterProducts('${cat}')">${cat}</button>`).join('');
 }
-
 function filterProducts(category) {
   currentCategory = category;
   buildFilters();
   displayProducts();
 }
-
 function displayProducts() {
   const grid = document.getElementById('grid');
   const filtered = currentCategory === 'All'? products : products.filter(p => p.Category === currentCategory);
-
   grid.innerHTML = '';
-  filtered.forEach((p, index) => {
-    grid.innerHTML += `
-      <div class="card" onclick="showProduct(${products.indexOf(p)})">
-        <img src="${p.Image1}">
-        <h3>${p['Product Name']}</h3>
-        <p class="cat">${p.Category}</p>
-        <p>Rs ${p.Price}</p>
-      </div>
-    `;
+  filtered.forEach((p) => {
+    grid.innerHTML += `<div class="card" onclick='showProduct(${JSON.stringify(p)})'><img src="${p.Image1}"><h3>${p['Product Name']}</h3><p class="cat">${p.Category}</p><p>Rs ${p.Price}</p></div>`;
   });
 }
-
-function showProduct(index) {
-  const p = products[index];
+function showProduct(p) {
   document.getElementById('modalTitle').innerText = p['Product Name'];
   document.getElementById('modalPrice').innerText = 'Rs ' + p.Price;
   document.getElementById('modalStock').innerText = 'Stock: ' + p.Stock;
@@ -138,21 +96,17 @@ function showProduct(index) {
   document.getElementById('img4').src = p.Image4;
   document.getElementById('modal').style.display = 'block';
 }
-
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
 }
-
 function orderWhatsApp() {
   const p = document.getElementById('modalTitle').innerText;
   const price = document.getElementById('modalPrice').innerText;
   const msg = `Hi, I want to order ${p} - ${price}`;
   window.open(`https://wa.me/923001234567?text=${encodeURIComponent(msg)}`, '_blank');
 }
-
 buildFilters();
 displayProducts();
 </script>
-
 </body>
 </html>
