@@ -7,24 +7,24 @@
 <style>
   body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
   header { background: #2874f0; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
- .filter-bar { display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
- .filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
- .filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
- .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
- .card { background: white; border-radius: 8px; padding: 10px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; }
- .card:hover { transform: translateY(-3px); }
- .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; background: #eee; }
- .card h3 { font-size: 14px; margin: 8px 0 4px; }
- .card.cat { font-size: 12px; color: #666; margin: 0 0 4px 0; }
- .card p { color: #2874f0; font-weight: bold; margin: 0; }
- .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
- .modal-content { background: white; width: 90%; max-width: 500px; margin: 50px auto; border-radius: 10px; padding: 20px; position: relative; max-height: 80vh; overflow-y: auto; }
- .close { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
- .image-scroll { display: flex; gap: 10px; overflow-x: auto; margin: 15px 0; }
- .image-scroll img { width: 120px; height: 120px; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: #eee; }
- .price { color: #2874f0; font-size: 22px; font-weight: bold; }
- .btn-whatsapp { background: #25D366; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 15px; }
- .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
+.filter-bar { display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
+.filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
+.card { background: white; border-radius: 8px; padding: 10px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; }
+.card:hover { transform: translateY(-3px); }
+.card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; background: #eee; }
+.card h3 { font-size: 14px; margin: 8px 0 4px; }
+.card.cat { font-size: 12px; color: #666; margin: 0 0 4px 0; }
+.card p { color: #2874f0; font-weight: bold; margin: 0; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
+.modal-content { background: white; width: 90%; max-width: 500px; margin: 50px auto; border-radius: 10px; padding: 20px; position: relative; max-height: 80vh; overflow-y: auto; }
+.close { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
+.image-scroll { display: flex; gap: 10px; overflow-x: auto; margin: 15px 0; }
+.image-scroll img { width: 120px; height: 120px; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: #eee; }
+.price { color: #2874f0; font-size: 22px; font-weight: bold; }
+.btn-whatsapp { background: #25D366; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 15px; }
+.loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
 </style>
 </head>
 <body>
@@ -35,7 +35,7 @@
   <div class="modal-content">
     <span class="close" onclick="closeModal()">&times;</span>
     <h2 id="modalTitle"></h2>
-    <div class="image-scroll">
+    <div class="image-scroll" id="imageScroll">
       <img id="img1" onerror="this.style.display='none'">
       <img id="img2" onerror="this.style.display='none'">
       <img id="img3" onerror="this.style.display='none'">
@@ -50,7 +50,7 @@
 </div>
 <script>
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTs1Tzfl93ZoAyrQRAF-RBq5lx6umpdDUnj8K3AT9LQx_FybHGRfe4tv9moie4QZ6GHpR5rSp81Eqx6/pub?output=csv";
-const WHATSAPP_NUMBER = "923001234567"; // CHANGE THIS to your number with country code
+const WHATSAPP_NUMBER = "923367672293";
 
 let products = [];
 let currentCategory = 'All';
@@ -97,12 +97,12 @@ function filterProducts(category) {
 function displayProducts() {
   const grid = document.getElementById('grid');
   const filtered = currentCategory === 'All'? products : products.filter(p => p.Category === currentCategory);
-  
+
   if(filtered.length === 0){
     grid.innerHTML = '<div class="loading">No products found</div>';
     return;
   }
-  
+
   grid.innerHTML = filtered.map((p) => `
     <div class="card" onclick='showProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
       <img src="${p.Image1 || ''}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='">
@@ -114,17 +114,22 @@ function displayProducts() {
 }
 
 function showProduct(p) {
-  document.getElementById('modalTitle').innerText = p['Product Name'];
-  document.getElementById('modalPrice').innerText = 'Rs ' + p.Price;
-  document.getElementById('modalStock').innerText = 'Stock: ' + p.Stock;
-  document.getElementById('modalCategory').innerText = 'Category: ' + p.Category;
-  document.getElementById('modalDesc').innerText = p.Description;
-  
+  document.getElementById('modalTitle').innerText = p['Product Name'] || '';
+  document.getElementById('modalPrice').innerText = 'Rs ' + (p.Price || '0');
+  document.getElementById('modalStock').innerText = 'Stock: ' + (p.Stock || '0');
+  document.getElementById('modalCategory').innerText = 'Category: ' + (p.Category || '');
+  document.getElementById('modalDesc').innerText = p.Description || '';
+
   document.getElementById('img1').src = p.Image1 || '';
   document.getElementById('img2').src = p.Image2 || '';
   document.getElementById('img3').src = p.Image3 || '';
   document.getElementById('img4').src = p.Image4 || '';
-  
+
+  document.getElementById('img1').style.display = p.Image1? 'block' : 'none';
+  document.getElementById('img2').style.display = p.Image2? 'block' : 'none';
+  document.getElementById('img3').style.display = p.Image3? 'block' : 'none';
+  document.getElementById('img4').style.display = p.Image4? 'block' : 'none';
+
   document.getElementById('modal').style.display = 'block';
 }
 
