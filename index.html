@@ -43,6 +43,7 @@
     </div>
     <p class="price" id="modalPrice"></p>
     <p id="modalStock"></p>
+    <p id="modalCode"></p>
     <p id="modalCategory"></p>
     <p id="modalDesc"></p>
     <button class="btn-whatsapp" onclick="orderWhatsApp()">Order on WhatsApp</button>
@@ -117,6 +118,7 @@ function showProduct(p) {
   document.getElementById('modalTitle').innerText = p['Product Name'] || '';
   document.getElementById('modalPrice').innerText = 'Rs ' + (p.Price || '0');
   document.getElementById('modalStock').innerText = 'Stock: ' + (p.Stock || '0');
+  document.getElementById('modalCode').innerText = 'Code: ' + (p['Product Code'] || 'N/A');
   document.getElementById('modalCategory').innerText = 'Category: ' + (p.Category || '');
   document.getElementById('modalDesc').innerText = p.Description || '';
 
@@ -138,17 +140,16 @@ function closeModal() {
 }
 
 function orderWhatsApp() {
-    const p = document.getElementById('modalTitle').innerText;
-    const price = document.getElementById('modalPrice').innerText;
-    const code = document.getElementById('modalCode').innerText; // <-- ye nayi line
-    
-    const msg = `Hi, I want to order 
-Product: ${p}
-Code: ${code}
-Price: ${price}`;
-    
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+  const p = document.getElementById('modalTitle').innerText;
+  const price = document.getElementById('modalPrice').innerText;
+  const code = document.getElementById('modalCode').innerText;
 
+  const msg = `Hi, I want to order
+Product: ${p}
+${code}
+Price: ${price}`;
+
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 loadProducts();
