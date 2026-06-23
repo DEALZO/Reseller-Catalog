@@ -84,18 +84,15 @@ function csvToJSON(csv) {
   });
 }
 
-function extractCode(p) {
-  // 1. Pehle Product Code column check
+function getCode(p) {
+  // 1. Product Code column check
   let code = p['productcode'] || '';
 
-  // 2. Agar khali hai to Description ke aakhir se code nikal lo
+  // 2. Agar khali hai to Description me code dhoondo
   if(!code && p.description) {
-    let lines = p.description.trim().split('\n');
-    let lastLine = lines[lines.length - 1].trim();
-    // hhc-3760774, THR.13, DCF.12 sab match ho jayega
-    if(lastLine.match(/^[A-Za-z0-9.\-]+$/)) {
-      code = lastLine;
-    }
+    // hhc-3760791, THR.41 jaisa pattern dhoondo
+    let match = p.description.match(/[A-Za-z0-9]+[-.][A-Za-z0-9]+/);
+    if(match) code = match[0];
   }
   return code;
 }
@@ -135,12 +132,12 @@ function displayProducts() {
 
 function showProduct(p) {
   currentProduct = p;
-  let code = extractCode(p);
+  let code = getCode(p);
 
   document.getElementById('modalTitle').innerText = p['productname'] || '';
   document.getElementById('modalPrice').innerText = 'Rs ' + (p.price || '0');
   document.getElementById('modalStock').innerText = 'Stock: ' + (p.stock || '0');
-  document.getElementById('modalCode').innerText = code? 'Code: ' + code : '';
+  document.getElementById('modalCode').innerText = code? 'Code: ' + code : 'Code: N/A';
   document.getElementById('modalCategory').innerText = 'Category: ' + (p.category || '');
   document.getElementById('modalDesc').innerText = p.description || '';
 
@@ -166,7 +163,7 @@ function orderWhatsApp() {
 
   const name = currentProduct['productname'] || '';
   const price = currentProduct.price || '0';
-  const code = extractCode(currentProduct);
+  const code = getCode(currentProduct);
 
   let msg = `Hi, I want to order\nProduct: ${name}\nPrice: Rs ${price}`;
   if(code) msg += `\nCode: ${code}`;
