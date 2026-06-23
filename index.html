@@ -138,10 +138,17 @@ function closeModal() {
 }
 
 function orderWhatsApp() {
-  const p = document.getElementById('modalTitle').innerText;
-  const price = document.getElementById('modalPrice').innerText;
-  const msg = `Hi, I want to order ${p} - ${price}`;
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+    const p = document.getElementById('modalTitle').innerText;
+    const price = document.getElementById('modalPrice').innerText;
+    const code = document.getElementById('modalCode').innerText; // <-- ye nayi line
+    
+    const msg = `Hi, I want to order 
+Product: ${p}
+Code: ${code}
+Price: ${price}`;
+    
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+
 }
 
 loadProducts();
