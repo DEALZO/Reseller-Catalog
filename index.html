@@ -65,14 +65,13 @@ async function loadProducts() {
     buildFilters();
     displayProducts();
   } catch (err) {
-    document.getElementById('grid').innerHTML = '<div class="loading">Error loading products. Make sure sheet is published to web.</div>';
-    console.log(err);
+    document.getElementById('grid').innerHTML = '<div class="loading">Error loading products.</div>';
   }
 }
 
 function csvToJSON(csv) {
+  csv = csv.replace(/^\uFEFF/, '');
   const lines = csv.split('\n').filter(line => line.trim());
-  // Header ko lowercase + space remove kar do: "Product Code" => "productcode"
   const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase().replace(/\s+/g, ''));
 
   return lines.slice(1).map(line => {
@@ -83,6 +82,22 @@ function csvToJSON(csv) {
     });
     return obj;
   });
+}
+
+function extractCode(p) {
+  // 1. Pehle Product Code column check
+  let code = p['productcode'] || '';
+
+  // 2. Agar khali hai to Description ke aakhir se code nikal lo
+  if(!code && p.description) {
+    let lines = p.description.trim().split('\n');
+    let lastLine = lines[lines.length - 1].trim();
+    // hhc-3760774, THR.13, DCF.12 sab match ho jayega
+    if(lastLine.match(/^[A-Za-z0-9.\-]+$/)) {
+      code = lastLine;
+    }
+  }
+  return code;
 }
 
 function buildFilters() {
@@ -120,11 +135,12 @@ function displayProducts() {
 
 function showProduct(p) {
   currentProduct = p;
+  let code = extractCode(p);
 
   document.getElementById('modalTitle').innerText = p['productname'] || '';
   document.getElementById('modalPrice').innerText = 'Rs ' + (p.price || '0');
   document.getElementById('modalStock').innerText = 'Stock: ' + (p.stock || '0');
-  document.getElementById('modalCode').innerText = p['productcode']? 'Code: ' + p['productcode'] : '';
+  document.getElementById('modalCode').innerText = code? 'Code: ' + code : '';
   document.getElementById('modalCategory').innerText = 'Category: ' + (p.category || '');
   document.getElementById('modalDesc').innerText = p.description || '';
 
@@ -150,7 +166,7 @@ function orderWhatsApp() {
 
   const name = currentProduct['productname'] || '';
   const price = currentProduct.price || '0';
-  const code = currentProduct['productcode'] || '';
+  const code = extractCode(currentProduct);
 
   let msg = `Hi, I want to order\nProduct: ${name}\nPrice: Rs ${price}`;
   if(code) msg += `\nCode: ${code}`;
