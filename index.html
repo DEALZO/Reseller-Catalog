@@ -54,6 +54,7 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTs1Tzfl93ZoAyr
 const WHATSAPP_NUMBER = "+923367672293";
 
 let products = [];
+let currentProduct = null;
 let currentCategory = 'All';
 
 async function loadProducts() {
@@ -115,10 +116,12 @@ function displayProducts() {
 }
 
 function showProduct(p) {
+  currentProduct = p; // 👈 Product save kar liya order ke liye
+
   document.getElementById('modalTitle').innerText = p['Product Name'] || '';
   document.getElementById('modalPrice').innerText = 'Rs ' + (p.Price || '0');
   document.getElementById('modalStock').innerText = 'Stock: ' + (p.Stock || '0');
-  document.getElementById('modalCode').innerText = 'Code: ' + (p['Product Code'] || 'N/A');
+  document.getElementById('modalCode').innerText = 'Code: ' + (p['Product Code'] || '');
   document.getElementById('modalCategory').innerText = 'Category: ' + (p.Category || '');
   document.getElementById('modalDesc').innerText = p.Description || '';
 
@@ -140,14 +143,14 @@ function closeModal() {
 }
 
 function orderWhatsApp() {
-  const p = document.getElementById('modalTitle').innerText;
-  const price = document.getElementById('modalPrice').innerText;
-  const code = document.getElementById('modalCode').innerText;
+  if(!currentProduct) return;
 
-  const msg = `Hi, I want to order
-Product: ${p}
-${code}
-Price: ${price}`;
+  const name = currentProduct['Product Name'] || '';
+  const price = currentProduct.Price || '0';
+  const code = currentProduct['Product Code'] || ''; // 👈 Seedha Sheet se code
+
+  let msg = `Hi, I want to order\nProduct: ${name}\nPrice: Rs ${price}`;
+  if(code) msg += `\nCode: ${code}`; // 👈 Code sirf tab add hoga jab Sheet me likha ho
 
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 }
