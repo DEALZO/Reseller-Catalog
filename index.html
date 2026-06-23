@@ -66,12 +66,15 @@ async function loadProducts() {
     displayProducts();
   } catch (err) {
     document.getElementById('grid').innerHTML = '<div class="loading">Error loading products. Make sure sheet is published to web.</div>';
+    console.log(err);
   }
 }
 
 function csvToJSON(csv) {
   const lines = csv.split('\n').filter(line => line.trim());
-  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+  // Header ko lowercase + space remove kar do: "Product Code" => "productcode"
+  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase().replace(/\s+/g, ''));
+
   return lines.slice(1).map(line => {
     const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
     let obj = {};
@@ -83,7 +86,7 @@ function csvToJSON(csv) {
 }
 
 function buildFilters() {
-  const categories = ['All',...new Set(products.map(p => p.Category).filter(Boolean))];
+  const categories = ['All',...new Set(products.map(p => p.category).filter(Boolean))];
   const filterBar = document.getElementById('filterBar');
   filterBar.innerHTML = categories.map(cat =>
     `<button class="filter-btn ${cat === currentCategory? 'active' : ''}" onclick="filterProducts('${cat}')">${cat}</button>`
@@ -98,7 +101,7 @@ function filterProducts(category) {
 
 function displayProducts() {
   const grid = document.getElementById('grid');
-  const filtered = currentCategory === 'All'? products : products.filter(p => p.Category === currentCategory);
+  const filtered = currentCategory === 'All'? products : products.filter(p => p.category === currentCategory);
 
   if(filtered.length === 0){
     grid.innerHTML = '<div class="loading">No products found</div>';
@@ -107,33 +110,33 @@ function displayProducts() {
 
   grid.innerHTML = filtered.map((p) => `
     <div class="card" onclick='showProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
-      <img src="${p.Image1 || ''}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='">
-      <h3>${p['Product Name'] || ''}</h3>
-      <p class="cat">${p.Category || ''}</p>
-      <p>Rs ${p.Price || '0'}</p>
+      <img src="${p.image1 || ''}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='">
+      <h3>${p['productname'] || ''}</h3>
+      <p class="cat">${p.category || ''}</p>
+      <p>Rs ${p.price || '0'}</p>
     </div>
   `).join('');
 }
 
 function showProduct(p) {
-  currentProduct = p; // 👈 Product save kar liya order ke liye
+  currentProduct = p;
 
-  document.getElementById('modalTitle').innerText = p['Product Name'] || '';
-  document.getElementById('modalPrice').innerText = 'Rs ' + (p.Price || '0');
-  document.getElementById('modalStock').innerText = 'Stock: ' + (p.Stock || '0');
-  document.getElementById('modalCode').innerText = 'Code: ' + (p['Product Code'] || '');
-  document.getElementById('modalCategory').innerText = 'Category: ' + (p.Category || '');
-  document.getElementById('modalDesc').innerText = p.Description || '';
+  document.getElementById('modalTitle').innerText = p['productname'] || '';
+  document.getElementById('modalPrice').innerText = 'Rs ' + (p.price || '0');
+  document.getElementById('modalStock').innerText = 'Stock: ' + (p.stock || '0');
+  document.getElementById('modalCode').innerText = p['productcode']? 'Code: ' + p['productcode'] : '';
+  document.getElementById('modalCategory').innerText = 'Category: ' + (p.category || '');
+  document.getElementById('modalDesc').innerText = p.description || '';
 
-  document.getElementById('img1').src = p.Image1 || '';
-  document.getElementById('img2').src = p.Image2 || '';
-  document.getElementById('img3').src = p.Image3 || '';
-  document.getElementById('img4').src = p.Image4 || '';
+  document.getElementById('img1').src = p.image1 || '';
+  document.getElementById('img2').src = p.image2 || '';
+  document.getElementById('img3').src = p.image3 || '';
+  document.getElementById('img4').src = p.image4 || '';
 
-  document.getElementById('img1').style.display = p.Image1? 'block' : 'none';
-  document.getElementById('img2').style.display = p.Image2? 'block' : 'none';
-  document.getElementById('img3').style.display = p.Image3? 'block' : 'none';
-  document.getElementById('img4').style.display = p.Image4? 'block' : 'none';
+  document.getElementById('img1').style.display = p.image1? 'block' : 'none';
+  document.getElementById('img2').style.display = p.image2? 'block' : 'none';
+  document.getElementById('img3').style.display = p.image3? 'block' : 'none';
+  document.getElementById('img4').style.display = p.image4? 'block' : 'none';
 
   document.getElementById('modal').style.display = 'block';
 }
@@ -145,12 +148,12 @@ function closeModal() {
 function orderWhatsApp() {
   if(!currentProduct) return;
 
-  const name = currentProduct['Product Name'] || '';
-  const price = currentProduct.Price || '0';
-  const code = currentProduct['Product Code'] || ''; // 👈 Seedha Sheet se code
+  const name = currentProduct['productname'] || '';
+  const price = currentProduct.price || '0';
+  const code = currentProduct['productcode'] || '';
 
   let msg = `Hi, I want to order\nProduct: ${name}\nPrice: Rs ${price}`;
-  if(code) msg += `\nCode: ${code}`; // 👈 Code sirf tab add hoga jab Sheet me likha ho
+  if(code) msg += `\nCode: ${code}`;
 
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 }
