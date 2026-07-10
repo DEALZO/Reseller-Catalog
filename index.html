@@ -8,46 +8,47 @@
     *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
     body{background:#f5f5f5}
     header{background:#ff5722;color:white;padding:15px;position:sticky;top:0;z-index:999}
-  .header-top{display:flex;justify-content:space-between;align-items:center}
-  .logo{font-size:24px;font-weight:bold}
-  .cart-btn{background:white;color:#ff5722;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;font-weight:bold}
-
-  .banner-container{width:100%;max-width:1200px;margin:20px auto;padding:0 15px}
-  .banner-container img{width:100%;height:auto;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-
-  .filters{max-width:1200px;margin:10px auto;padding:15px;display:flex;gap:10px;flex-wrap:wrap}
-  .filters select{padding:10px;border:1px solid #ddd;border-radius:5px}
-  .container{max-width:1200px;margin:20px auto;padding:0 15px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
-  .card{background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
-  .card img{width:100%;height:250px;object-fit:cover}
-  .card-body{padding:15px}
-  .card-title{font-size:16px;font-weight:bold;margin-bottom:5px}
-  .price{color:#ff5722;font-size:18px;font-weight:bold}
-  .old-price{text-decoration:line-through;color:gray;font-size:14px;margin-left:5px}
-  .btn{background:#ff5722;color:white;border:none;padding:10px;width:100%;border-radius:5px;cursor:pointer;margin-top:10px}
-
-    /* CART FIX - BAS YAHAN 2 LINE BADLI HAIN */
-  .cart-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;z-index:999}
-  .cart-modal{
+   .header-top{display:flex;justify-content:space-between;align-items:center}
+   .logo{font-size:24px;font-weight:bold}
+   .cart-btn{background:white;color:#ff5722;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;font-weight:bold}
+    
+    /* BANNER SECTION - NEW */
+   .banner-container{width:100%;max-width:1200px;margin:20px auto;padding:0 15px}
+   .banner-container img{width:100%;height:auto;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+    
+   .filters{max-width:1200px;margin:10px auto;padding:15px;display:flex;gap:10px;flex-wrap:wrap}
+   .filters select{padding:10px;border:1px solid #ddd;border-radius:5px}
+   .container{max-width:1200px;margin:20px auto;padding:0 15px}
+   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
+   .card{background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+   .card img{width:100%;height:250px;object-fit:cover}
+   .card-body{padding:15px}
+   .card-title{font-size:16px;font-weight:bold;margin-bottom:5px}
+   .price{color:#ff5722;font-size:18px;font-weight:bold}
+   .old-price{text-decoration:line-through;color:gray;font-size:14px;margin-left:5px}
+   .btn{background:#ff5722;color:white;border:none;padding:10px;width:100%;border-radius:5px;cursor:pointer;margin-top:10px}
+    
+    /* CART FIX - SCROLL ENABLED */
+   .cart-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;z-index:999}
+   .cart-modal{
         position:fixed;top:0;right:-400px;width:400px;height:100vh;
         background:white;box-shadow:-2px 0 10px rgba(0,0,0,0.1);
         transition:right 0.3s;z-index:1000;display:flex;flex-direction:column
     }
-  .cart-modal.active{right:0}
-  .cart-header{padding:20px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;flex-shrink:0} /* flex-shrink:0 add */
-  .cart-items{
-        flex:1;
-        overflow-y:auto; /* SCROLL */
+   .cart-modal.active{right:0}
+   .cart-header{padding:20px;border-bottom:1px solid #eee;display:flex;justify-content:space-between}
+   .cart-items{
+        flex:1; /* bachi hui jagah le */
+        overflow-y:auto; /* SCROLL YAHAN SE CHALEGA */
         padding:20px
     }
-  .cart-item{display:flex;gap:10px;margin-bottom:15px;border-bottom:1px solid #eee;padding-bottom:15px}
-  .cart-item img{width:60px;height:60px;object-fit:cover;border-radius:5px}
-  .cart-footer{padding:20px;border-top:1px solid #eee;background:white;flex-shrink:0} /* background + flex-shrink:0 add */
-  .loading{text-align:center;padding:50px;font-size:18px}
-
+   .cart-item{display:flex;gap:10px;margin-bottom:15px;border-bottom:1px solid #eee;padding-bottom:15px}
+   .cart-item img{width:60px;height:60px;object-fit:cover;border-radius:5px}
+   .cart-footer{padding:20px;border-top:1px solid #eee}
+   .loading{text-align:center;padding:50px;font-size:18px}
+    
     @media(max-width:768px){
-      .cart-modal{width:100%}
+       .cart-modal{width:100%}
     }
 </style>
 </head>
@@ -60,6 +61,7 @@
     </div>
 </header>
 
+<!-- BANNER - YAHAN APNI PIC KA LINK DALO -->
 <div class="banner-container">
     <img src="https://via.placeholder.com/1200x400/ff5722/ffffff?text=Big+Sale+50%+OFF" alt="Sale Banner">
     <img src="https://via.placeholder.com/1200x400/2196f3/ffffff?text=New+Arrivals" alt="New Arrivals">
@@ -73,6 +75,7 @@
     <div id="grid" class="grid"><div class="loading">Loading products...</div></div>
 </div>
 
+<!-- CART -->
 <div class="cart-overlay" onclick="toggleCart()"></div>
 <div class="cart-modal" id="cartModal">
     <div class="cart-header">
@@ -87,6 +90,7 @@
 </div>
 
 <script>
+// TUMHARA CSV LINK - ALREADY SET
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTs1Tzfl93ZoAyrQRAF-RBq5lx6umpdDUnj8K3AT9LQx_FybHGRfe4tv9moie4QZ6GHpR5rSp81Eqx6/pub?output=csv";
 
 let products = [];
@@ -147,7 +151,6 @@ function filterProducts(){
 }
 
 function addToCart(p){
-    p.price = parseFloat(p.price); // ye total sahi karne ke liye
     const ex = cart.find(i=>i.name==p.name);
     if(ex) ex.qty++; else cart.push({...p,qty:1});
     updateCart();
@@ -169,12 +172,12 @@ function updateCart(){
             </div>
         </div>`
     })
-    document.getElementById('cartTotal').innerText = total.toFixed(0);
+    document.getElementById('cartTotal').innerText = total;
 }
 
 function toggleCart(){
     document.getElementById('cartModal').classList.toggle('active');
-    document.querySelector('.cart-overlay').style.display =
+    document.querySelector('.cart-overlay').style.display = 
         document.getElementById('cartModal').classList.contains('active')? 'block' : 'none';
 }
 
