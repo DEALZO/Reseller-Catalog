@@ -50,17 +50,37 @@ async function loadProducts() {
   showProduct();
 }
 
-// FIX: Headers ko sahi read karega "Product Name"
+// YE WALA NAYA SMART CSV PARSER HAI
 function csvToJSON(csv) {
   csv = csv.replace(/^\uFEFF/, '');
   const lines = csv.split('\n').filter(line => line.trim());
-  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+  const headers = parseCSVLine(lines[0]);
   return lines.slice(1).map((line, i) => {
-    const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+    const values = parseCSVLine(line);
     let obj = {id: i};
-    headers.forEach((h, j) => { obj[h] = (values[j] || '').trim().replace(/"/g, ''); });
+    headers.forEach((h, j) => { obj[h] = (values[j] || '').trim(); });
     return obj;
   });
+}
+
+// Ye function " " ke andar wale comma ko nahi todega
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"' && line[i-1]!== '\\') {
+      inQuotes =!inQuotes;
+    } else if (char === ',' &&!inQuotes) {
+      result.push(current.replace(/^"|"$/g, ''));
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.replace(/^"|"$/g, ''));
+  return result;
 }
 
 function getProductId() {
@@ -76,7 +96,7 @@ function showProduct() {
   const btnText = inCart? 'Remove from Cart' : 'Add to Cart';
   const btnClass = inCart? 'btn-add added' : 'btn-add';
 
-  let images = [p.Image1, p.Image2, p.Image3, p.Image4].filter(Boolean);
+  let images = [p['Image1'], p['Image2'], p['Image3'], p['Image4']].filter(Boolean);
   let thumbs = images.map((img, i)=> `<img src="${img}" class="${i==0?'active':''}" onclick="changeMainImg(this, '${img}')">`).join('');
 
   let html = `<div class="product-box">
@@ -86,20 +106,20 @@ function showProduct() {
     </div>
     <div class="product-info">
       <h1>${p['Product Name']}</h1>
-      <div class="price">Rs. ${p.Price}</div>
+      <div class="price">Rs. ${p['Price']}</div>
       <p class="product-code">Product Code: PROD${p.id}</p>
-      <p><b>DESCRIPTION:</b><br>${p.Description || 'No description available.'}</p>
+      <p><b>DESCRIPTION:</b><br>${p['Description'] || 'No description available.'}</p>
       <button class="${btnClass}" onclick='toggleCartItem(${JSON.stringify(p).replace(/'/g, "&apos;")})'>${btnText}</button>
     </div>
   </div>`;
 
-  const related = products.filter(x => x.Category === p.Category && x.id!== p.id);
-  html += `<div class="related"><h2>More in ${p.Category}</h2><div class="grid">`;
+  const related = products.filter(x => x['Category'] === p['Category'] && x.id!== p.id);
+  html += `<div class="related"><h2>More in ${p['Category']}</h2><div class="grid">`;
   related.forEach(r => {
     html += `<div class="card" onclick="window.location.href='product.html?id=${r.id}'">
-      <img src="${r.Image1}">
+      <img src="${r['Image1']}">
       <p>${r['Product Name']}</p>
-      <b>Rs. ${r.Price}</b>
+      <b>Rs. ${r['Price']}</b>
     </div>`;
   });
   html += `</div></div>`;
