@@ -8,24 +8,25 @@
   body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
   header { background: #2874f0; color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 999; }
   header h1 a{color:white; text-decoration:none; font-size:20px;}
- .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
- .product-box { display: flex; gap: 30px; background: white; padding: 20px; border-radius: 8px; }
- .product-images { flex: 1; }
- .product-images img.main { width: 100%; border-radius: 8px; margin-bottom:10px; }
- .thumb-row{display:flex; gap:10px;}
- .thumb-row img{width:80px; height:80px; object-fit:cover; border-radius:5px; cursor:pointer; border:2px solid #ddd;}
- .thumb-row img.active{border-color:#2874f0;}
- .product-info { flex: 1; }
- .product-info h1 { font-size: 24px; margin: 0 0 10px 0; }
- .price { color: #2874f0; font-size: 28px; font-weight: bold; margin: 10px 0; }
- .btn-add { background: #2874f0; color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; margin-top:15px; }
- .btn-add.added{ background: #dc3545; }
- .related { margin-top: 30px; }
- .related h2 { margin-bottom: 15px; }
- .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-.related .grid { max-height: none; overflow: visible; }
- .card { background: white; padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
- .card img { width: 100%; height: 150px; object-fit: cover; }
+.container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+.product-box { display: flex; gap: 30px; background: white; padding: 20px; border-radius: 8px; }
+.product-images { flex: 1; }
+.product-images img.main { width: 100%; border-radius: 8px; margin-bottom:10px; }
+.thumb-row{display:flex; gap:10px; flex-wrap:wrap;}
+.thumb-row img{width:80px; height:80px; object-fit:cover; border-radius:5px; cursor:pointer; border:2px solid #ddd;}
+.thumb-row img.active{border-color:#2874f0;}
+.product-info { flex: 1; }
+.product-info h1 { font-size: 24px; margin: 0 0 10px 0; }
+.price { color: #2874f0; font-size: 28px; font-weight: bold; margin: 10px 0; }
+.product-info p { margin: 8px 0; color: #333; }
+.btn-add { background: #2874f0; color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; margin-top:15px; }
+.btn-add.added{ background: #dc3545; }
+.related { margin-top: 30px; }
+.related h2 { margin-bottom: 15px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+.card { background: white; padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.card img { width: 100%; height: 150px; object-fit: cover; }
+.card p { margin: 5px 0; }
   @media(max-width:768px){.product-box{flex-direction: column;} }
 </style>
 </head>
@@ -83,9 +84,8 @@ function showProduct() {
     </div>
     <div class="product-info">
       <h1>${p.productname}</h1>
-      <p>SKU: PROD${p.id} | Category: ${p.category}</p>
       <div class="price">Rs. ${p.price}</div>
-      <p><b>Stock:</b> ${p.stock}</p>
+      <p>Category: ${p.category}</p>
       <p><b>DESCRIPTION:</b><br>${p.description || 'No description available.'}</p>
       <button class="${btnClass}" onclick='toggleCartItem(${JSON.stringify(p).replace(/'/g, "&apos;")})'>${btnText}</button>
     </div>
@@ -110,7 +110,7 @@ function toggleCartItem(p) {
   const existIndex = cart.findIndex(item => item.id == p.id);
   if(existIndex > -1){ cart.splice(existIndex, 1); } else { cart.push({...p, qty: 1}); }
   localStorage.setItem('cart', JSON.stringify(cart));
-  showProduct(); // button text update
+  showProduct();
 }
 
 loadProducts();
