@@ -28,7 +28,7 @@
 .card.cat { font-size: 12px; color: #666; margin: 0 0 4px 0; }
 .card p { color: #2874f0; font-weight: bold; margin: 0 0 8px 0; }
 .btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; }
-.btn-add.added{ background: #25D366; }
+.btn-add.added{ background: #dc3545; } /* RED for remove */
 .btn-add:disabled{ cursor: not-allowed; opacity: 0.9; }
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
 .modal-content { background: white; width: 90%; max-width: 500px; margin: 50px auto; border-radius: 10px; padding: 20px; position: relative; max-height: 80vh; overflow-y: auto; }
@@ -49,12 +49,14 @@
 .cart-sidebar.close{ padding: 15px 20px 0 20px; text-align: right; }
 .cart-sidebar h2{ padding: 0 20px 10px 20px; margin:0; border-bottom:1px solid #eee; flex-shrink: 0; }
 #cartItems{ flex: 1; overflow-y: auto; padding: 15px 20px; }
-.cart-item { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.cart-item { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; align-items: center; }
 .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
+.cart-item-info { flex: 1; }
+.cart-item-info p { margin: 2px 0; }
+.remove-btn { background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 16px; } /* DUSTBIN BUTTON */
 .cart-total { font-weight: bold; font-size: 18px; margin: 0; padding: 15px 20px; border-top: 1px solid #eee; flex-shrink: 0; }
 .cart-sidebar.btn-order{ margin: 0 20px 20px 20px; flex-shrink: 0; }
 
-/* ORDER FORM CSS */
 .order-form input,.order-form textarea{ width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
 .order-form label{ font-size: 14px; font-weight: bold; margin-bottom: 5px; display: block; }
 </style>
@@ -90,10 +92,9 @@
     </div>
     <p class="price" id="modalPrice"></p>
     <p id="modalStock"></p>
-    <p id="modalCode"></p>
     <p id="modalCategory"></p>
     <p id="modalDesc"></p>
-    <button class="btn-whatsapp" onclick="addToCart(currentProduct)">Add to Cart</button>
+    <button class="btn-whatsapp" onclick="toggleCartItem(currentProduct)">Add to Cart</button>
   </div>
 </div>
 
@@ -105,7 +106,6 @@
   <button class="btn-order" onclick="showOrderForm()">Place Order</button>
 </div>
 
-<!-- NAYA ORDER FORM POPUP -->
 <div class="modal" id="orderFormModal">
   <div class="modal-content order-form">
     <span class="close" onclick="closeOrderForm()">&times;</span>
@@ -121,7 +121,6 @@
     <button class="btn-order" onclick="sendOrderToSheet()">Confirm Order</button>
   </div>
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
@@ -193,15 +192,16 @@ function displayProducts() {
   }
   grid.innerHTML = filteredProducts.map((p, index) => {
     const inCart = cart.find(item => item.productname === p.productname);
-    const btnText = inCart? 'Added' : 'Add to Cart';
-    const btnClass = inCart? 'btn-add added' : 'btn-add';
+    const btnText = inCart? 'Remove' : 'Add to Cart'; // TOGGLE TEXT
+    const btnClass = inCart? 'btn-add added' : 'btn-add'; // RED if added
+
     return `
     <div class="card">
       <img src="${p.image1 || ''}" onclick='showProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'>
       <h3 onclick='showProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'>${p['productname'] || ''}</h3>
       <p class="cat">${p.category || ''}</p>
       <p>Rs ${p.price || '0'}</p>
-      <button class="${btnClass}" id="btn-${index}" onclick='addToCartWithFeedback(${JSON.stringify(p).replace(/'/g, "&apos;")}, ${index})'>${btnText}</button>
+      <button class="${btnClass}" id="btn-${index}" onclick='toggleCartItem(${JSON.stringify(p).replace(/'/g, "&apos;")})'>${btnText}</button>
     </div>
   `}).join('');
 }
@@ -221,16 +221,24 @@ function showProduct(p) {
 }
 function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
-function addToCart(p) {
-  const exist = cart.find(item => item.productname === p.productname);
-  if(exist) exist.qty += 1; else cart.push({...p, qty: 1});
+// NAYA TOGGLE FUNCTION
+function toggleCartItem(p) {
+  const existIndex = cart.findIndex(item => item.productname === p.productname);
+  if(existIndex > -1){
+    cart.splice(existIndex, 1); // REMOVE
+  } else {
+    cart.push({...p, qty: 1}); // ADD
+  }
   updateCart();
+  displayProducts();
   closeModal();
 }
 
-function addToCartWithFeedback(p, btnIndex){
-    addToCart(p);
-    displayProducts();
+// REMOVE FUNCTION FOR DUSTBIN
+function removeFromCart(productname){
+  cart = cart.filter(item => item.productname!== productname);
+  updateCart();
+  displayProducts();
 }
 
 function toggleCart() { document.getElementById('cartSidebar').classList.toggle('active'); }
@@ -239,16 +247,16 @@ function updateCart() {
   document.getElementById('cartItems').innerHTML = cart.map(item=>`
     <div class="cart-item">
       <img src="${item.image1}">
-      <div>
+      <div class="cart-item-info">
         <p>${item.productname}</p>
         <p>Rs ${item.price} x ${item.qty}</p>
       </div>
+      <button class="remove-btn" onclick="removeFromCart('${item.productname.replace(/'/g, "\\'")}')">🗑️</button>
     </div>
   `).join('');
   document.getElementById('cartTotal').innerText = cart.reduce((a,b)=>a + Number(b.price)*b.qty, 0);
 }
 
-// NAYE 3 FUNCTIONS FORM KE LIYE
 function showOrderForm(){
   if(cart.length === 0) return alert('Cart is empty');
   document.getElementById('orderFormModal').style.display = 'block';
@@ -266,7 +274,7 @@ function sendOrderToSheet() {
   if(!name ||!number ||!address) return alert('Please fill Name, Number and Address');
 
   const orderData = {
-    customer: {name, number, altNumber, address}, // ab sari details jayengi
+    customer: {name, number, altNumber, address},
     items: cart.map(item => ({
       name: item.productname,
       qty: item.qty,
