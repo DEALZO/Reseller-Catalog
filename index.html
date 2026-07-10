@@ -104,7 +104,7 @@ const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz-iUT2I_Jxpt8
 
 let products = [];
 let filteredProducts = [];
-let currentCategory = 'All';
+
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 const swiper = new Swiper('.swiper', { loop: true, autoplay: { delay: 3000, disableOnInteraction: false } });
@@ -115,7 +115,7 @@ async function loadProducts() {
     const csvText = await response.text();
     products = csvToJSON(csvText);
     filteredProducts = products;
-    buildFilters();
+    //buildFilters();
     displayProducts();
     updateCart();
   } catch (err) {
@@ -136,20 +136,10 @@ function csvToJSON(csv) {
   });
 }
 
-function buildFilters() {
-  const categories = ['All',...new Set(products.map(p => p.Category).filter(Boolean))];
-  document.getElementById('filterBar').innerHTML = categories.map(cat =>
-    `<button class="filter-btn ${cat === currentCategory? 'active' : ''}" onclick="filterProducts('${cat}')">${cat}</button>`
-  ).join('');
-}
-
-function filterProducts(category) { currentCategory = category; buildFilters(); applySearch(); }
-document.getElementById('searchInput').addEventListener('keyup', applySearch);
-
 function applySearch() {
   const search = document.getElementById('searchInput').value.toLowerCase();
   filteredProducts = products.filter(p => {
-    const matchCat = currentCategory === 'All' || p.Category === currentCategory;
+    const matchCat = true;
     const matchSearch = (p['Product Name'] || '').toLowerCase().includes(search);
     return matchCat && matchSearch;
   });
