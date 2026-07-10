@@ -38,23 +38,25 @@
 .btn-whatsapp { background: #25D366; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 15px; }
 .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
 
-  /* CART SIDEBAR - YAHAN SCROLL FIX KIYA HAI */
+  /* CART SIDEBAR - FINAL SCROLL FIX */
 .cart-sidebar {
-    position: fixed; right: -350px; top: 0; width: 320px; height: 100vh; /* height:100vh add */
+    position: fixed; right: -350px; top: 0; width: 320px; height: 100vh;
     background: white; box-shadow: -2px 0 10px rgba(0,0,0,0.2); transition: 0.3s; z-index: 1001;
-    padding: 20px; display: flex; flex-direction: column; /* flex add */
+    padding: 0; /* padding 0 kar di */
+    display: flex; flex-direction: column;
 }
 .cart-sidebar.active { right: 0; }
-.cart-sidebar h2{ flex-shrink: 0; } /* h2 ko fix rakha */
- #cartItems{
+.cart-sidebar.close{ padding: 15px 20px 0 20px; text-align: right; }
+.cart-sidebar h2{ padding: 0 20px 10px 20px; margin:0; border-bottom:1px solid #eee; flex-shrink: 0; }
+#cartItems{
     flex: 1; /* bachi hui jagah le */
-    overflow-y: auto; /* YAHI SCROLL CHALEGA */
-    padding-right: 5px;
+    overflow-y: auto; /* YAHI SCROLL HOGA */
+    padding: 15px 20px;
 }
 .cart-item { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
 .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
-.cart-total { font-weight: bold; font-size: 18px; margin: 15px 0; flex-shrink: 0; } /* total ko fix rakha */
-.cart-sidebar.btn-whatsapp{ flex-shrink: 0; } /* button ko fix rakha */
+.cart-total { font-weight: bold; font-size: 18px; margin: 0; padding: 15px 20px; border-top: 1px solid #eee; flex-shrink: 0; }
+.cart-sidebar.btn-whatsapp{ margin: 0 20px 20px 20px; flex-shrink: 0; }
 </style>
 </head>
 <body>
