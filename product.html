@@ -16,9 +16,10 @@
 .thumb-row img{width:80px; height:80px; object-fit:cover; border-radius:5px; cursor:pointer; border:2px solid #ddd;}
 .thumb-row img.active{border-color:#2874f0;}
 .product-info { flex: 1; }
-.product-info h1 { font-size: 24px; margin: 0 0 10px 0; }
+.product-info h1 { font-size: 24px; margin: 0 0 10px 0; line-height: 1.4; }
 .price { color: #2874f0; font-size: 28px; font-weight: bold; margin: 10px 0; }
-.product-info p { margin: 8px 0; color: #333; }
+.product-info p { margin: 8px 0; color: #333; font-size: 15px; }
+.product-code { color: #666; font-size: 14px; }
 .btn-add { background: #2874f0; color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; margin-top:15px; }
 .btn-add.added{ background: #dc3545; }
 .related { margin-top: 30px; }
@@ -49,14 +50,15 @@ async function loadProducts() {
   showProduct();
 }
 
+// FIX: Headers ko sahi read karega "Product Name"
 function csvToJSON(csv) {
   csv = csv.replace(/^\uFEFF/, '');
   const lines = csv.split('\n').filter(line => line.trim());
-  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase().replace(/\s+/g, ''));
+  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
   return lines.slice(1).map((line, i) => {
     const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
     let obj = {id: i};
-    headers.forEach((h, i) => { obj[h] = (values[i] || '').trim().replace(/"/g, ''); });
+    headers.forEach((h, j) => { obj[h] = (values[j] || '').trim().replace(/"/g, ''); });
     return obj;
   });
 }
@@ -74,30 +76,30 @@ function showProduct() {
   const btnText = inCart? 'Remove from Cart' : 'Add to Cart';
   const btnClass = inCart? 'btn-add added' : 'btn-add';
 
-  let images = [p.image1, p.image2, p.image3, p.image4].filter(Boolean);
+  let images = [p.Image1, p.Image2, p.Image3, p.Image4].filter(Boolean);
   let thumbs = images.map((img, i)=> `<img src="${img}" class="${i==0?'active':''}" onclick="changeMainImg(this, '${img}')">`).join('');
 
   let html = `<div class="product-box">
     <div class="product-images">
-      <img class="main" id="mainImg" src="${images[0]}" alt="${p.productname}">
+      <img class="main" id="mainImg" src="${images[0]}" alt="${p['Product Name']}">
       <div class="thumb-row">${thumbs}</div>
     </div>
     <div class="product-info">
-      <h1>${p.productname}</h1>
-      <div class="price">Rs. ${p.price}</div>
-      <p>Category: ${p.category}</p>
-      <p><b>DESCRIPTION:</b><br>${p.description || 'No description available.'}</p>
+      <h1>${p['Product Name']}</h1>
+      <div class="price">Rs. ${p.Price}</div>
+      <p class="product-code">Product Code: PROD${p.id}</p>
+      <p><b>DESCRIPTION:</b><br>${p.Description || 'No description available.'}</p>
       <button class="${btnClass}" onclick='toggleCartItem(${JSON.stringify(p).replace(/'/g, "&apos;")})'>${btnText}</button>
     </div>
   </div>`;
 
-  const related = products.filter(x => x.category === p.category && x.id!== p.id);
-  html += `<div class="related"><h2>More in ${p.category}</h2><div class="grid">`;
+  const related = products.filter(x => x.Category === p.Category && x.id!== p.id);
+  html += `<div class="related"><h2>More in ${p.Category}</h2><div class="grid">`;
   related.forEach(r => {
     html += `<div class="card" onclick="window.location.href='product.html?id=${r.id}'">
-      <img src="${r.image1}">
-      <p>${r.productname}</p>
-      <b>Rs. ${r.price}</b>
+      <img src="${r.Image1}">
+      <p>${r['Product Name']}</p>
+      <b>Rs. ${r.Price}</b>
     </div>`;
   });
   html += `</div></div>`;
