@@ -3,193 +3,236 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashing Deals - Shop</title>
+<title>Superb Deals</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-    body{background:#f5f5f5}
-    header{background:#ff5722;color:white;padding:15px;position:sticky;top:0;z-index:999}
-   .header-top{display:flex;justify-content:space-between;align-items:center}
-   .logo{font-size:24px;font-weight:bold}
-   .cart-btn{background:white;color:#ff5722;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;font-weight:bold}
-    
-    /* BANNER SECTION - NEW */
-   .banner-container{width:100%;max-width:1200px;margin:20px auto;padding:0 15px}
-   .banner-container img{width:100%;height:auto;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-    
-   .filters{max-width:1200px;margin:10px auto;padding:15px;display:flex;gap:10px;flex-wrap:wrap}
-   .filters select{padding:10px;border:1px solid #ddd;border-radius:5px}
-   .container{max-width:1200px;margin:20px auto;padding:0 15px}
-   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px}
-   .card{background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
-   .card img{width:100%;height:250px;object-fit:cover}
-   .card-body{padding:15px}
-   .card-title{font-size:16px;font-weight:bold;margin-bottom:5px}
-   .price{color:#ff5722;font-size:18px;font-weight:bold}
-   .old-price{text-decoration:line-through;color:gray;font-size:14px;margin-left:5px}
-   .btn{background:#ff5722;color:white;border:none;padding:10px;width:100%;border-radius:5px;cursor:pointer;margin-top:10px}
-    
-    /* CART FIX - SCROLL ENABLED */
-   .cart-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;z-index:999}
-   .cart-modal{
-        position:fixed;top:0;right:-400px;width:400px;height:100vh;
-        background:white;box-shadow:-2px 0 10px rgba(0,0,0,0.1);
-        transition:right 0.3s;z-index:1000;display:flex;flex-direction:column
-    }
-   .cart-modal.active{right:0}
-   .cart-header{padding:20px;border-bottom:1px solid #eee;display:flex;justify-content:space-between}
-   .cart-items{
-        flex:1; /* bachi hui jagah le */
-        overflow-y:auto; /* SCROLL YAHAN SE CHALEGA */
-        padding:20px
-    }
-   .cart-item{display:flex;gap:10px;margin-bottom:15px;border-bottom:1px solid #eee;padding-bottom:15px}
-   .cart-item img{width:60px;height:60px;object-fit:cover;border-radius:5px}
-   .cart-footer{padding:20px;border-top:1px solid #eee}
-   .loading{text-align:center;padding:50px;font-size:18px}
-    
-    @media(max-width:768px){
-       .cart-modal{width:100%}
-    }
+  body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
+  header { background: #2874f0; color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 999; }
+  header h1 { font-size: 20px; margin: 0; font-weight: bold; }
+ .header-right { display: flex; gap: 15px; align-items: center; }
+ .search-box input { padding: 8px 12px; border-radius: 20px; border: none; width: 180px; }
+ .cart-icon { position: relative; cursor: pointer; font-size: 20px; }
+ .cart-count { position: absolute; top: -8px; right: -10px; background: red; color: white; font-size: 12px; padding: 2px 6px; border-radius: 50%; }
+
+  /* SLIDER */
+ .swiper { width: 100%; height: 200px; }
+ .swiper-slide img { width: 100%; height: 200px; object-fit: cover; }
+
+ .filter-bar { display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+ .filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
+ .filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
+ .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
+ .card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; }
+ .card:hover { transform: translateY(-3px); }
+ .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; background: #eee; }
+ .card h3 { font-size: 14px; margin: 8px 0 4px; height: 35px; overflow: hidden; }
+ .card.cat { font-size: 12px; color: #666; margin: 0 0 4px 0; }
+ .card p { color: #2874f0; font-weight: bold; margin: 0 0 8px 0; }
+ .btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 14px; }
+ .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
+ .modal-content { background: white; width: 90%; max-width: 500px; margin: 50px auto; border-radius: 10px; padding: 20px; position: relative; max-height: 80vh; overflow-y: auto; }
+ .close { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
+ .image-scroll { display: flex; gap: 10px; overflow-x: auto; margin: 15px 0; }
+ .image-scroll img { width: 120px; height: 120px; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: #eee; }
+ .price { color: #2874f0; font-size: 22px; font-weight: bold; }
+ .btn-whatsapp { background: #25D366; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 15px; }
+ .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
+
+  /* CART SIDEBAR */
+ .cart-sidebar { position: fixed; right: -350px; top: 0; width: 320px; height: 100%; background: white; box-shadow: -2px 0 10px rgba(0,0,0,0.2); transition: 0.3s; z-index: 1001; padding: 20px; }
+ .cart-sidebar.active { right: 0; }
+ .cart-item { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+ .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
+ .cart-total { font-weight: bold; font-size: 18px; margin: 15px 0; }
 </style>
 </head>
 <body>
 
 <header>
-    <div class="header-top">
-        <div class="logo">Dashing Deals</div>
-        <button class="cart-btn" onclick="toggleCart()">Cart (<span id="cartCount">0</span>)</button>
-    </div>
+  <h1>Superb Deals</h1>
+  <div class="header-right">
+    <div class="search-box"><input type="text" id="searchInput" placeholder="Search products..."></div>
+    <div class="cart-icon" onclick="toggleCart()">🛒<span class="cart-count" id="cartCount">0</span></div>
+  </div>
 </header>
 
-<!-- BANNER - YAHAN APNI PIC KA LINK DALO -->
-<div class="banner-container">
-    <img src="https://via.placeholder.com/1200x400/ff5722/ffffff?text=Big+Sale+50%+OFF" alt="Sale Banner">
-    <img src="https://via.placeholder.com/1200x400/2196f3/ffffff?text=New+Arrivals" alt="New Arrivals">
+<!-- SLIDING BANNER -->
+<div class="swiper">
+  <div class="swiper-wrapper">
+    <div class="swiper-slide"><img src="https://via.placeholder.com/800x200/ff6b6b/fff?text=UP+TO+60%25+OFF" alt="Banner 1"></div>
+    <div class="swiper-slide"><img src="https://via.placeholder.com/800x200/2874f0/fff?text=CASH+ON+DELIVERY" alt="Banner 2"></div>
+    <div class="swiper-slide"><img src="https://via.placeholder.com/800x200/25D366/fff?text=NEW+ARRIVALS" alt="Banner 3"></div>
+  </div>
 </div>
 
-<div class="filters">
-    <select id="categoryFilter" onchange="filterProducts()"><option value="">All Categories</option></select>
-</div>
+<div class="filter-bar" id="filterBar"></div>
+<div class="grid" id="grid"><div class="loading">Loading products...</div></div>
 
-<div class="container">
-    <div id="grid" class="grid"><div class="loading">Loading products...</div></div>
-</div>
-
-<!-- CART -->
-<div class="cart-overlay" onclick="toggleCart()"></div>
-<div class="cart-modal" id="cartModal">
-    <div class="cart-header">
-        <h2>Your Cart</h2>
-        <span onclick="toggleCart()" style="cursor:pointer;font-size:24px">X</span>
+<!-- PRODUCT MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2 id="modalTitle"></h2>
+    <div class="image-scroll" id="imageScroll">
+      <img id="img1" onerror="this.style.display='none'">
+      <img id="img2" onerror="this.style.display='none'">
+      <img id="img3" onerror="this.style.display='none'">
+      <img id="img4" onerror="this.style.display='none'">
     </div>
-    <div class="cart-items" id="cartItems"></div>
-    <div class="cart-footer">
-        <h3>Total: Rs <span id="cartTotal">0</span></h3>
-        <button class="btn" onclick="checkout()">Order on WhatsApp</button>
-    </div>
+    <p class="price" id="modalPrice"></p>
+    <p id="modalStock"></p>
+    <p id="modalCode"></p>
+    <p id="modalCategory"></p>
+    <p id="modalDesc"></p>
+    <button class="btn-whatsapp" onclick="addToCart(currentProduct)">Add to Cart</button>
+  </div>
 </div>
 
+<!-- CART SIDEBAR -->
+<div class="cart-sidebar" id="cartSidebar">
+  <span class="close" onclick="toggleCart()">&times;</span>
+  <h2>Your Cart</h2>
+  <div id="cartItems"></div>
+  <p class="cart-total">Total: Rs <span id="cartTotal">0</span></p>
+  <button class="btn-whatsapp" onclick="orderCartWhatsApp()">Order on WhatsApp</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-// TUMHARA CSV LINK - ALREADY SET
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTs1Tzfl93ZoAyrQRAF-RBq5lx6umpdDUnj8K3AT9LQx_FybHGRfe4tv9moie4QZ6GHpR5rSp81Eqx6/pub?output=csv";
+const WHATSAPP_NUMBER = "+923196854972";
 
 let products = [];
-let cart = [];
 let filteredProducts = [];
+let currentProduct = null;
+let currentCategory = 'All';
+let cart = [];
+
+// INIT SLIDER
+const swiper = new Swiper('.swiper', { loop: true, autoplay: { delay: 3000 } });
 
 async function loadProducts() {
   try {
-    const response = await fetch(CSV_URL + "&t=" + new Date().getTime());
+    const response = await fetch(CSV_URL);
     const csvText = await response.text();
     products = csvToJSON(csvText);
     filteredProducts = products;
     buildFilters();
     displayProducts();
   } catch (err) {
-    document.getElementById('grid').innerHTML = '<div class="loading">Error: Products load nahi ho rahe. Sheet check karo.</div>';
+    document.getElementById('grid').innerHTML = '<div class="loading">Error loading products.</div>';
   }
 }
 
 function csvToJSON(csv) {
+  csv = csv.replace(/^\uFEFF/, '');
   const lines = csv.split('\n').filter(line => line.trim());
-  const headers = lines.shift().split(',').map(h => h.trim().toLowerCase());
-  return lines.map(line => {
-    const values = line.split(',');
+  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase().replace(/\s+/g, ''));
+  return lines.slice(1).map(line => {
+    const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
     let obj = {};
-    headers.forEach((h, i) => { obj[h] = (values[i] || '').trim(); });
+    headers.forEach((h, i) => { obj[h] = (values[i] || '').trim().replace(/"/g, ''); });
     return obj;
   });
 }
 
-function buildFilters(){
-    const cats = [...new Set(products.map(p=>p.category))];
-    cats.forEach(c=>{
-        document.getElementById('categoryFilter').innerHTML += `<option value="${c}">${c}</option>`
-    })
+function getCode(p) {
+  let code = p['productcode'] || '';
+  if(!code && p.description) {
+    let match = p.description.match(/[A-Za-z0-9]+[-.][A-Za-z0-9]+/);
+    if(match) code = match[0];
+  }
+  return code;
 }
 
-function displayProducts(){
-    const grid = document.getElementById('grid');
-    grid.innerHTML = '';
-    filteredProducts.forEach(p=>{
-        grid.innerHTML += `
-        <div class="card">
-            <img src="${p.image}" onerror="this.src='https://via.placeholder.com/250'">
-            <div class="card-body">
-                <div class="card-title">${p.name}</div>
-                <div><span class="price">Rs ${p.price}</span> <span class="old-price">Rs ${p.oldprice}</span></div>
-                <button class="btn" onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button>
-            </div>
-        </div>`
-    })
+function buildFilters() {
+  const categories = ['All',...new Set(products.map(p => p.category).filter(Boolean))];
+  document.getElementById('filterBar').innerHTML = categories.map(cat =>
+    `<button class="filter-btn ${cat === currentCategory? 'active' : ''}" onclick="filterProducts('${cat}')">${cat}</button>`
+  ).join('');
 }
 
-function filterProducts(){
-    const cat = document.getElementById('categoryFilter').value;
-    filteredProducts = cat? products.filter(p=>p.category==cat) : products;
-    displayProducts();
+function filterProducts(category) {
+  currentCategory = category;
+  buildFilters();
+  applySearch();
 }
 
-function addToCart(p){
-    const ex = cart.find(i=>i.name==p.name);
-    if(ex) ex.qty++; else cart.push({...p,qty:1});
-    updateCart();
+document.getElementById('searchInput').addEventListener('keyup', applySearch);
+function applySearch() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  filteredProducts = products.filter(p => {
+    const matchCat = currentCategory === 'All' || p.category === currentCategory;
+    const matchSearch = (p.productname || '').toLowerCase().includes(search);
+    return matchCat && matchSearch;
+  });
+  displayProducts();
 }
 
-function updateCart(){
-    document.getElementById('cartCount').innerText = cart.reduce((a,b)=>a+b.qty,0);
-    const cartItems = document.getElementById('cartItems');
-    cartItems.innerHTML = '';
-    let total = 0;
-    cart.forEach(i=>{
-        total += i.price * i.qty;
-        cartItems.innerHTML += `
-        <div class="cart-item">
-            <img src="${i.image}" onerror="this.src='https://via.placeholder.com/60'">
-            <div>
-                <div>${i.name}</div>
-                <div>Rs ${i.price} x ${i.qty}</div>
-            </div>
-        </div>`
-    })
-    document.getElementById('cartTotal').innerText = total;
+function displayProducts() {
+  const grid = document.getElementById('grid');
+  if(filteredProducts.length === 0){
+    grid.innerHTML = '<div class="loading">No products found</div>';
+    return;
+  }
+  grid.innerHTML = filteredProducts.map((p) => `
+    <div class="card">
+      <img src="${p.image1 || ''}" onclick='showProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})' onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjEyIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='">
+      <h3 onclick='showProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'>${p['productname'] || ''}</h3>
+      <p class="cat">${p.category || ''}</p>
+      <p>Rs ${p.price || '0'}</p>
+      <button class="btn-add" onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&apos;")})'>Add to Cart</button>
+    </div>
+  `).join('');
 }
 
-function toggleCart(){
-    document.getElementById('cartModal').classList.toggle('active');
-    document.querySelector('.cart-overlay').style.display = 
-        document.getElementById('cartModal').classList.contains('active')? 'block' : 'none';
+function showProduct(p) {
+  currentProduct = p;
+  let code = getCode(p);
+  document.getElementById('modalTitle').innerText = p['productname'] || '';
+  document.getElementById('modalPrice').innerText = 'Rs ' + (p.price || '0');
+  document.getElementById('modalStock').innerText = 'Stock: ' + (p.stock || '0');
+  document.getElementById('modalCode').innerText = code? 'Code: ' + code : 'Code: N/A';
+  document.getElementById('modalCategory').innerText = 'Category: ' + (p.category || '');
+  document.getElementById('modalDesc').innerText = p.description || '';
+  ['img1','img2','img3','img4'].forEach((id,i)=>{
+    document.getElementById(id).src = p['image'+(i+1)] || '';
+    document.getElementById(id).style.display = p['image'+(i+1)]? 'block' : 'none';
+  });
+  document.getElementById('modal').style.display = 'block';
 }
+function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
-function checkout(){
-    let msg = "Order Details:%0A";
-    cart.forEach(i=>msg += `${i.name} x ${i.qty} = Rs ${i.price*i.qty}%0A`);
-    msg += `Total: Rs ${document.getElementById('cartTotal').innerText}`;
-    window.open(`https://wa.me/92XXXXXXXXXX?text=${msg}`);
+// CART FUNCTIONS
+function addToCart(p) {
+  const exist = cart.find(item => item.productname === p.productname);
+  if(exist) exist.qty += 1; else cart.push({...p, qty: 1});
+  updateCart();
+  closeModal();
+}
+function toggleCart() { document.getElementById('cartSidebar').classList.toggle('active'); }
+function updateCart() {
+  document.getElementById('cartCount').innerText = cart.reduce((a,b)=>a+b.qty,0);
+  document.getElementById('cartItems').innerHTML = cart.map(item=>`
+    <div class="cart-item">
+      <img src="${item.image1}">
+      <div>
+        <p>${item.productname}</p>
+        <p>Rs ${item.price} x ${item.qty}</p>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('cartTotal').innerText = cart.reduce((a,b)=>a + Number(b.price)*b.qty, 0);
+}
+function orderCartWhatsApp() {
+  if(cart.length === 0) return alert('Cart is empty');
+  let msg = `Hi, I want to order:\n\n`;
+  cart.forEach(item=>{ msg += `${item.productname} - Qty: ${item.qty} - Rs ${item.price}\n`; });
+  msg += `\nTotal: Rs ${document.getElementById('cartTotal').innerText}`;
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 loadProducts();
 </script>
-
 </body>
 </html>
