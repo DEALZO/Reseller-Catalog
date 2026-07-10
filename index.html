@@ -53,6 +53,10 @@
 .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
 .cart-total { font-weight: bold; font-size: 18px; margin: 0; padding: 15px 20px; border-top: 1px solid #eee; flex-shrink: 0; }
 .cart-sidebar.btn-order{ margin: 0 20px 20px 20px; flex-shrink: 0; }
+
+/* ORDER FORM CSS */
+.order-form input,.order-form textarea{ width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+.order-form label{ font-size: 14px; font-weight: bold; margin-bottom: 5px; display: block; }
 </style>
 </head>
 <body>
@@ -65,13 +69,11 @@
   </div>
 </header>
 
-<div class="swiper">
-  <div class="swiper-wrapper">
-    <div class="swiper-slide"><img src="https://via.placeholder.com/800x200/ff6b6b/fff?text=UP+TO+60%25+OFF"></div>
-    <div class="swiper-slide"><img src="https://via.placeholder.com/800x200/2874f0/fff?text=CASH+ON+DELIVERY"></div>
-    <div class="swiper-slide"><img src="https://via.placeholder.com/800x200/25D366/fff?text=NEW+ARRIVALS"></div>
-  </div>
-</div>
+<div class="swiper"><div class="swiper-wrapper">
+  <div class="swiper-slide"><img src="https://via.placeholder.com/800x200/ff6b6b/fff?text=UP+TO+60%25+OFF"></div>
+  <div class="swiper-slide"><img src="https://via.placeholder.com/800x200/2874f0/fff?text=CASH+ON+DELIVERY"></div>
+  <div class="swiper-slide"><img src="https://via.placeholder.com/800x200/25D366/fff?text=NEW+ARRIVALS"></div>
+</div></div>
 
 <div class="filter-bar" id="filterBar"></div>
 <div class="grid" id="grid"><div class="loading">Loading products...</div></div>
@@ -100,8 +102,26 @@
   <h2>Your Cart</h2>
   <div id="cartItems"></div>
   <p class="cart-total">Total: Rs <span id="cartTotal">0</span></p>
-  <button class="btn-order" onclick="sendOrderToSheet()">Place Order</button>
+  <button class="btn-order" onclick="showOrderForm()">Place Order</button>
 </div>
+
+<!-- NAYA ORDER FORM POPUP -->
+<div class="modal" id="orderFormModal">
+  <div class="modal-content order-form">
+    <span class="close" onclick="closeOrderForm()">&times;</span>
+    <h2>Customer Details</h2>
+    <label>Name *</label>
+    <input type="text" id="custName" placeholder="Enter your name" required>
+    <label>WhatsApp Number *</label>
+    <input type="text" id="custNumber" placeholder="03xx-xxxxxxx" required>
+    <label>Additional Number</label>
+    <input type="text" id="custAltNumber" placeholder="Optional">
+    <label>Full Address *</label>
+    <textarea id="custAddress" rows="3" placeholder="House, Street, City" required></textarea>
+    <button class="btn-order" onclick="sendOrderToSheet()">Confirm Order</button>
+  </div>
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
@@ -139,15 +159,6 @@ function csvToJSON(csv) {
     headers.forEach((h, i) => { obj[h] = (values[i] || '').trim().replace(/"/g, ''); });
     return obj;
   });
-}
-
-function getCode(p) {
-  let code = p['productcode'] || '';
-  if(!code && p.description) {
-    let match = p.description.match(/[A-Za-z0-9]+[-.][A-Za-z0-9]+/);
-    if(match) code = match[0];
-  }
-  return code;
 }
 
 function buildFilters() {
@@ -197,11 +208,9 @@ function displayProducts() {
 
 function showProduct(p) {
   currentProduct = p;
-  let code = getCode(p);
   document.getElementById('modalTitle').innerText = p['productname'] || '';
   document.getElementById('modalPrice').innerText = 'Rs ' + (p.price || '0');
   document.getElementById('modalStock').innerText = 'Stock: ' + (p.stock || '0');
-  document.getElementById('modalCode').innerText = code? 'Code: ' + code : 'Code: N/A';
   document.getElementById('modalCategory').innerText = 'Category: ' + (p.category || '');
   document.getElementById('modalDesc').innerText = p.description || '';
   ['img1','img2','img3','img4'].forEach((id,i)=>{
@@ -239,15 +248,25 @@ function updateCart() {
   document.getElementById('cartTotal').innerText = cart.reduce((a,b)=>a + Number(b.price)*b.qty, 0);
 }
 
-// GOOGLE SHEET ME ORDER BHEJNE WALA FUNCTION
-function sendOrderToSheet() {
+// NAYE 3 FUNCTIONS FORM KE LIYE
+function showOrderForm(){
   if(cart.length === 0) return alert('Cart is empty');
+  document.getElementById('orderFormModal').style.display = 'block';
+}
+function closeOrderForm(){
+  document.getElementById('orderFormModal').style.display = 'none';
+}
 
-  const customerNumber = prompt("Please enter your WhatsApp number for order confirmation:");
-  if(!customerNumber) return;
+function sendOrderToSheet() {
+  const name = document.getElementById('custName').value;
+  const number = document.getElementById('custNumber').value;
+  const altNumber = document.getElementById('custAltNumber').value;
+  const address = document.getElementById('custAddress').value;
+
+  if(!name ||!number ||!address) return alert('Please fill Name, Number and Address');
 
   const orderData = {
-    customer: customerNumber,
+    customer: {name, number, altNumber, address}, // ab sari details jayengi
     items: cart.map(item => ({
       name: item.productname,
       qty: item.qty,
@@ -266,6 +285,7 @@ function sendOrderToSheet() {
     cart = [];
     updateCart();
     displayProducts();
+    closeOrderForm();
     toggleCart();
   })
 .catch(err => alert('Error placing order. Please try again.'));
