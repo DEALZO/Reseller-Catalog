@@ -27,7 +27,8 @@
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
 .card { background: white; padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 .card img { width: 100%; height: 150px; object-fit: cover; }
-.card p { margin: 5px 0; }
+.card p.name { margin: 5px 0; font-size: 13px; height: 35px; overflow: hidden; } /* Related product title fix */
+.card b { font-size: 14px; }
   @media(max-width:768px){.product-box{flex-direction: column;} }
 </style>
 </head>
@@ -45,42 +46,40 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 async function loadProducts() {
   const response = await fetch(CSV_URL);
-  const csvText = await response.text();
+  let csvText = await response.text();
+  csvText = csvText.replace(/^\uFEFF/, ''); // BOM hata diya
   products = csvToJSON(csvText);
   showProduct();
 }
 
-// YE WALA NAYA SMART CSV PARSER HAI
 function csvToJSON(csv) {
-  csv = csv.replace(/^\uFEFF/, '');
   const lines = csv.split('\n').filter(line => line.trim());
   const headers = parseCSVLine(lines[0]);
   return lines.slice(1).map((line, i) => {
     const values = parseCSVLine(line);
     let obj = {id: i};
-    headers.forEach((h, j) => { obj[h] = (values[j] || '').trim(); });
+    headers.forEach((h, j) => { obj[h.trim()] = (values[j] || '').trim(); }); // trim kiya
     return obj;
   });
 }
 
-// Ye function " " ke andar wale comma ko nahi todega
 function parseCSVLine(line) {
   const result = [];
   let current = '';
   let inQuotes = false;
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
-    if (char === '"' && line[i-1]!== '\\') {
+    if (char === '"') {
       inQuotes =!inQuotes;
     } else if (char === ',' &&!inQuotes) {
-      result.push(current.replace(/^"|"$/g, ''));
+      result.push(current);
       current = '';
     } else {
       current += char;
     }
   }
-  result.push(current.replace(/^"|"$/g, ''));
-  return result;
+  result.push(current);
+  return result.map(s => s.replace(/^"|"$/g, ''));
 }
 
 function getProductId() {
@@ -91,7 +90,8 @@ function getProductId() {
 function showProduct() {
   const id = getProductId();
   const p = products[id];
-  if(!p) return;
+  if(!p) { document.getElementById('product-detail').innerHTML = "Product not found"; return; }
+  
   const inCart = cart.find(item => item.id == p.id);
   const btnText = inCart? 'Remove from Cart' : 'Add to Cart';
   const btnClass = inCart? 'btn-add added' : 'btn-add';
@@ -118,7 +118,7 @@ function showProduct() {
   related.forEach(r => {
     html += `<div class="card" onclick="window.location.href='product.html?id=${r.id}'">
       <img src="${r['Image1']}">
-      <p>${r['Product Name']}</p>
+      <p class="name">${r['Product Name']}</p>
       <b>Rs. ${r['Price']}</b>
     </div>`;
   });
