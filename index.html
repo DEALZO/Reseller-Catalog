@@ -18,7 +18,11 @@
 .swiper { width: 100%!important; height: auto!important; margin-bottom: 10px; }
 .swiper-slide img { width: 100%!important; height: auto!important; aspect-ratio: 3 / 1!important; object-fit: contain!important; display: block; }
 
-/* CATEGORIES HATA DI */
+/* CATEGORIES BAR */
+.filter-bar { display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
+.filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
+
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
 .card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; cursor: pointer; }
 .card:hover { transform: translateY(-3px); }
@@ -68,6 +72,7 @@
   </div>
 </div>
 
+<div class="filter-bar" id="filterBar"></div>
 <div class="grid" id="grid"><div class="loading">Loading products...</div></div>
 
 <div class="cart-sidebar" id="cartSidebar">
@@ -101,6 +106,7 @@ const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz-iUT2I_Jxpt8
 
 let products = [];
 let filteredProducts = [];
+let currentCategory = '';
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 const swiper = new Swiper('.swiper', { loop: true, autoplay: { delay: 3000, disableOnInteraction: false } });
@@ -109,9 +115,10 @@ async function loadProducts() {
   try {
     const response = await fetch(CSV_URL);
     let csvText = await response.text();
-    csvText = csvText.replace(/^\uFEFF/, ''); // BOM fix
+    csvText = csvText.replace(/^\uFEFF/, '');
     products = csvToJSON(csvText);
     filteredProducts = products;
+    buildFilters(); // Categories banegi yahan
     displayProducts();
     updateCart();
   } catch (err) {
@@ -119,7 +126,7 @@ async function loadProducts() {
   }
 }
 
-// SMART CSV PARSER - " wale comma nahi torega
+// SMART CSV PARSER
 function csvToJSON(csv) {
   const lines = csv.split('\n').filter(line => line.trim());
   const headers = parseCSVLine(lines[0]);
@@ -145,13 +152,31 @@ function parseCSVLine(line) {
   return result.map(s => s.replace(/^"|"$/g, ''));
 }
 
+// SIRF TUMHARI SHEET WALI CATEGORIES
+function buildFilters() {
+  const categories = [...new Set(products.map(p => p['Category']).filter(Boolean))];
+  currentCategory = categories[0] || ''; // Pehli category auto select
+  document.getElementById('filterBar').innerHTML = categories.map((cat, i) =>
+    `<button class="filter-btn ${i === 0? 'active' : ''}" onclick="filterProducts('${cat}', this)">${cat}</button>`
+  ).join('');
+  filterProducts(currentCategory); // Pehli category ke products show karo
+}
+
+function filterProducts(category, btn) {
+  currentCategory = category;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  applySearch();
+}
+
 document.getElementById('searchInput').addEventListener('input', applySearch);
 
 function applySearch() {
   const search = document.getElementById('searchInput').value.toLowerCase();
   filteredProducts = products.filter(p => {
+    const matchCat = p['Category'] === currentCategory;
     const matchSearch = (p['Product Name'] || '').toLowerCase().includes(search);
-    return matchSearch;
+    return matchCat && matchSearch;
   });
   displayProducts();
 }
