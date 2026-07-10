@@ -90,7 +90,7 @@ function showProduct() {
     </div>
   </div>`;
 
-  const related = products.filter(x => x.category === p.category && x.id!== p.id).slice(0,4);
+  const related = products.filter(x => x.category === p.category && x.id!== p.id);
   html += `<div class="related"><h2>More in ${p.category}</h2><div class="grid">`;
   related.forEach(r => {
     html += `<div class="card" onclick="window.location.href='product.html?id=${r.id}'">
