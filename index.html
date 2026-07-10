@@ -18,14 +18,12 @@
 .swiper { width: 100%!important; height: auto!important; margin-bottom: 10px; }
 .swiper-slide img { width: 100%!important; height: auto!important; aspect-ratio: 3 / 1!important; object-fit: contain!important; display: block; }
 
-.filter-bar { display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
-.filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
+/* CATEGORIES HATA DI */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
 .card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; cursor: pointer; }
 .card:hover { transform: translateY(-3px); }
 .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; background: #eee; }
-.card h3 { font-size: 14px; margin: 8px 0 4px; min-height: 40px; line-height: 1.3; } /* Title 2 line tak */
+.card h3 { font-size: 14px; margin: 8px 0 4px; min-height: 40px; line-height: 1.3; }
 .card p.price { color: #2874f0; font-weight: bold; margin: 0 0 8px 0; font-size: 15px; }
 .btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; }
 .btn-add.added{ background: #dc3545; }
@@ -70,7 +68,6 @@
   </div>
 </div>
 
-<div class="filter-bar" id="filterBar"></div>
 <div class="grid" id="grid"><div class="loading">Loading products...</div></div>
 
 <div class="cart-sidebar" id="cartSidebar">
@@ -104,7 +101,6 @@ const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz-iUT2I_Jxpt8
 
 let products = [];
 let filteredProducts = [];
-
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 const swiper = new Swiper('.swiper', { loop: true, autoplay: { delay: 3000, disableOnInteraction: false } });
@@ -112,10 +108,10 @@ const swiper = new Swiper('.swiper', { loop: true, autoplay: { delay: 3000, disa
 async function loadProducts() {
   try {
     const response = await fetch(CSV_URL);
-    const csvText = await response.text();
+    let csvText = await response.text();
+    csvText = csvText.replace(/^\uFEFF/, ''); // BOM fix
     products = csvToJSON(csvText);
     filteredProducts = products;
-    //buildFilters();
     displayProducts();
     updateCart();
   } catch (err) {
@@ -123,32 +119,44 @@ async function loadProducts() {
   }
 }
 
+// SMART CSV PARSER - " wale comma nahi torega
 function csvToJSON(csv) {
-  csv = csv.replace(/^\uFEFF/, '');
   const lines = csv.split('\n').filter(line => line.trim());
-  // FIX: Headers ko as it is rakha taake "Product Name" sahi aaye
-  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+  const headers = parseCSVLine(lines[0]);
   return lines.slice(1).map((line, i) => {
-    const values = line.split(','); // Simple split
+    const values = parseCSVLine(line);
     let obj = {id: i};
-    headers.forEach((h, j) => { obj[h] = (values[j] || '').trim().replace(/"/g, ''); });
+    headers.forEach((h, j) => { obj[h.trim()] = (values[j] || '').trim(); });
     return obj;
   });
 }
 
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') { inQuotes =!inQuotes; }
+    else if (char === ',' &&!inQuotes) { result.push(current); current = ''; }
+    else { current += char; }
+  }
+  result.push(current);
+  return result.map(s => s.replace(/^"|"$/g, ''));
+}
+
+document.getElementById('searchInput').addEventListener('input', applySearch);
+
 function applySearch() {
   const search = document.getElementById('searchInput').value.toLowerCase();
   filteredProducts = products.filter(p => {
-    const matchCat = true;
     const matchSearch = (p['Product Name'] || '').toLowerCase().includes(search);
-    return matchCat && matchSearch;
+    return matchSearch;
   });
   displayProducts();
 }
 
-function truncate(text, n){ // 50 characters ke baad...
-  return (text.length > n)? text.substr(0, n-1) + '...' : text;
-}
+function truncate(text, n){ return (text.length > n)? text.substr(0, n-1) + '...' : text; }
 
 function displayProducts() {
   const grid = document.getElementById('grid');
@@ -157,13 +165,13 @@ function displayProducts() {
     const inCart = cart.find(item => item.id == p.id);
     const btnText = inCart? 'Remove' : 'Add to Cart';
     const btnClass = inCart? 'btn-add added' : 'btn-add';
-    const title = truncate(p['Product Name'] || '', 50); // 50 chars limit
+    const title = truncate(p['Product Name'] || '', 50);
 
     return `
     <div class="card" onclick="window.location.href='product.html?id=${p.id}'">
-      <img src="${p.Image1 || ''}">
+      <img src="${p['Image1'] || ''}">
       <h3>${title}</h3>
-      <p class="price">Rs ${p.Price || '0'}</p>
+      <p class="price">Rs ${p['Price'] || '0'}</p>
       <button class="${btnClass}" onclick='event.stopPropagation(); toggleCartItem(${JSON.stringify(p).replace(/'/g, "&apos;")})'>${btnText}</button>
     </div>
   `}).join('');
@@ -189,15 +197,15 @@ function updateCart() {
   document.getElementById('cartCount').innerText = cart.reduce((a,b)=>a+b.qty,0);
   document.getElementById('cartItems').innerHTML = cart.map(item=>`
     <div class="cart-item">
-      <img src="${item.Image1}">
+      <img src="${item['Image1']}">
       <div class="cart-item-info">
         <p>${item['Product Name']}</p>
-        <p>Rs ${item.Price} x ${item.qty}</p>
+        <p>Rs ${item['Price']} x ${item.qty}</p>
       </div>
       <button class="remove-btn" onclick="removeFromCart('${item.id}')">🗑️</button>
     </div>
   `).join('');
-  document.getElementById('cartTotal').innerText = cart.reduce((a,b)=>a + Number(b.Price)*b.qty, 0);
+  document.getElementById('cartTotal').innerText = cart.reduce((a,b)=>a + Number(b['Price'])*b.qty, 0);
 }
 
 function showOrderForm(){
@@ -214,7 +222,7 @@ function sendOrderToSheet() {
   const address = document.getElementById('custAddress').value;
   if(!name ||!number ||!address) return alert('Please fill Name, Number and Address');
 
-  const orderData = { customer: {name, number, altNumber, address}, items: cart.map(item => ({ name: item['Product Name'], qty: item.qty, price: item.Price, total: Number(item.Price) * item.qty })) };
+  const orderData = { customer: {name, number, altNumber, address}, items: cart.map(item => ({ name: item['Product Name'], qty: item.qty, price: item['Price'], total: Number(item['Price']) * item.qty })) };
   fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) })
 .then(() => { alert('Order Placed Successfully!'); cart = []; localStorage.removeItem('cart'); updateCart(); displayProducts(); closeOrderForm(); })
 .catch(err => alert('Error placing order. Please try again.'));
