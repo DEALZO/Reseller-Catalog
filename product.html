@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details - Superb Deals</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
+  header { background: #2874f0; color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 999; }
+  header h1 a{color:white; text-decoration:none; font-size:20px;}
+ .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+ .product-box { display: flex; gap: 30px; background: white; padding: 20px; border-radius: 8px; }
+ .product-images { flex: 1; }
+ .product-images img.main { width: 100%; border-radius: 8px; margin-bottom:10px; }
+ .thumb-row{display:flex; gap:10px;}
+ .thumb-row img{width:80px; height:80px; object-fit:cover; border-radius:5px; cursor:pointer; border:2px solid #ddd;}
+ .thumb-row img.active{border-color:#2874f0;}
+ .product-info { flex: 1; }
+ .product-info h1 { font-size: 24px; margin: 0 0 10px 0; }
+ .price { color: #2874f0; font-size: 28px; font-weight: bold; margin: 10px 0; }
+ .btn-add { background: #2874f0; color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; margin-top:15px; }
+ .btn-add.added{ background: #dc3545; }
+ .related { margin-top: 30px; }
+ .related h2 { margin-bottom: 15px; }
+ .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+ .card { background: white; padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+ .card img { width: 100%; height: 150px; object-fit: cover; }
+  @media(max-width:768px){.product-box{flex-direction: column;} }
+</style>
+</head>
+<body>
+<header>
+  <h1><a href="index.html">← Superb Deals</a></h1>
+</header>
+
+<div class="container" id="product-detail"><div style="text-align:center; padding:50px;">Loading...</div></div>
+
+<script>
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTs1Tzfl93ZoAyrQRAF-RBq5lx6umpdDUnj8K3AT9LQx_FybHGRfe4tv9moie4QZ6GHpR5rSp81Eqx6/pub?output=csv";
+let products = [];
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+async function loadProducts() {
+  const response = await fetch(CSV_URL);
+  const csvText = await response.text();
+  products = csvToJSON(csvText);
+  showProduct();
+}
+
+function csvToJSON(csv) {
+  csv = csv.replace(/^\uFEFF/, '');
+  const lines = csv.split('\n').filter(line => line.trim());
+  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase().replace(/\s+/g, ''));
+  return lines.slice(1).map((line, i) => {
+    const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+    let obj = {id: i};
+    headers.forEach((h, i) => { obj[h] = (values[i] || '').trim().replace(/"/g, ''); });
+    return obj;
+  });
+}
+
+function getProductId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return parseInt(urlParams.get('id'));
+}
+
+function showProduct() {
+  const id = getProductId();
+  const p = products[id];
+  if(!p) return;
+  const inCart = cart.find(item => item.id == p.id);
+  const btnText = inCart? 'Remove from Cart' : 'Add to Cart';
+  const btnClass = inCart? 'btn-add added' : 'btn-add';
+
+  let images = [p.image1, p.image2, p.image3, p.image4].filter(Boolean);
+  let thumbs = images.map((img, i)=> `<img src="${img}" class="${i==0?'active':''}" onclick="changeMainImg(this, '${img}')">`).join('');
+
+  let html = `<div class="product-box">
+    <div class="product-images">
+      <img class="main" id="mainImg" src="${images[0]}" alt="${p.productname}">
+      <div class="thumb-row">${thumbs}</div>
+    </div>
+    <div class="product-info">
+      <h1>${p.productname}</h1>
+      <p>SKU: PROD${p.id} | Category: ${p.category}</p>
+      <div class="price">Rs. ${p.price}</div>
+      <p><b>Stock:</b> ${p.stock}</p>
+      <p><b>DESCRIPTION:</b><br>${p.description || 'No description available.'}</p>
+      <button class="${btnClass}" onclick='toggleCartItem(${JSON.stringify(p).replace(/'/g, "&apos;")})'>${btnText}</button>
+    </div>
+  </div>`;
+
+  const related = products.filter(x => x.category === p.category && x.id!== p.id).slice(0,4);
+  html += `<div class="related"><h2>More in ${p.category}</h2><div class="grid">`;
+  related.forEach(r => {
+    html += `<div class="card" onclick="window.location.href='product.html?id=${r.id}'">
+      <img src="${r.image1}">
+      <p>${r.productname}</p>
+      <b>Rs. ${r.price}</b>
+    </div>`;
+  });
+  html += `</div></div>`;
+  document.getElementById('product-detail').innerHTML = html;
+}
+
+function changeMainImg(el, src){ document.getElementById('mainImg').src = src; document.querySelectorAll('.thumb-row img').forEach(i=>i.classList.remove('active')); el.classList.add('active'); }
+
+function toggleCartItem(p) {
+  const existIndex = cart.findIndex(item => item.id == p.id);
+  if(existIndex > -1){ cart.splice(existIndex, 1); } else { cart.push({...p, qty: 1}); }
+  localStorage.setItem('cart', JSON.stringify(cart));
+  showProduct(); // button text update
+}
+
+loadProducts();
+</script>
+</body>
+</html>
