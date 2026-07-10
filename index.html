@@ -28,9 +28,9 @@
 .card.cat { font-size: 12px; color: #666; margin: 0 0 4px 0; }
 .card p { color: #2874f0; font-weight: bold; margin: 0 0 8px 0; }
 .btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; }
-.btn-add.added{ background: #dc3545; } /* RED for remove */
+.btn-add.added{ background: #dc3545; }
 .btn-add:disabled{ cursor: not-allowed; opacity: 0.9; }
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1002; } /* z-index barha diya */
 .modal-content { background: white; width: 90%; max-width: 500px; margin: 50px auto; border-radius: 10px; padding: 20px; position: relative; max-height: 80vh; overflow-y: auto; }
 .close { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
 .image-scroll { display: flex; gap: 10px; overflow-x: auto; margin: 15px 0; }
@@ -53,12 +53,17 @@
 .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
 .cart-item-info { flex: 1; }
 .cart-item-info p { margin: 2px 0; }
-.remove-btn { background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 16px; } /* DUSTBIN BUTTON */
+.remove-btn { background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 16px; }
 .cart-total { font-weight: bold; font-size: 18px; margin: 0; padding: 15px 20px; border-top: 1px solid #eee; flex-shrink: 0; }
 .cart-sidebar.btn-order{ margin: 0 20px 20px 20px; flex-shrink: 0; }
 
 .order-form input,.order-form textarea{ width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
 .order-form label{ font-size: 14px; font-weight: bold; margin-bottom: 5px; display: block; }
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px){
+ .cart-sidebar{ width: 100%; right: -100%; } /* Mobile me full width */
+}
 </style>
 </head>
 <body>
@@ -192,8 +197,8 @@ function displayProducts() {
   }
   grid.innerHTML = filteredProducts.map((p, index) => {
     const inCart = cart.find(item => item.productname === p.productname);
-    const btnText = inCart? 'Remove' : 'Add to Cart'; // TOGGLE TEXT
-    const btnClass = inCart? 'btn-add added' : 'btn-add'; // RED if added
+    const btnText = inCart? 'Remove' : 'Add to Cart';
+    const btnClass = inCart? 'btn-add added' : 'btn-add';
 
     return `
     <div class="card">
@@ -221,20 +226,18 @@ function showProduct(p) {
 }
 function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
-// NAYA TOGGLE FUNCTION
 function toggleCartItem(p) {
   const existIndex = cart.findIndex(item => item.productname === p.productname);
   if(existIndex > -1){
-    cart.splice(existIndex, 1); // REMOVE
+    cart.splice(existIndex, 1);
   } else {
-    cart.push({...p, qty: 1}); // ADD
+    cart.push({...p, qty: 1});
   }
   updateCart();
   displayProducts();
   closeModal();
 }
 
-// REMOVE FUNCTION FOR DUSTBIN
 function removeFromCart(productname){
   cart = cart.filter(item => item.productname!== productname);
   updateCart();
@@ -257,9 +260,11 @@ function updateCart() {
   document.getElementById('cartTotal').innerText = cart.reduce((a,b)=>a + Number(b.price)*b.qty, 0);
 }
 
+// FIXED FUNCTION
 function showOrderForm(){
   if(cart.length === 0) return alert('Cart is empty');
-  document.getElementById('orderFormModal').style.display = 'block';
+  toggleCart(); // PEHLE CART BAND KARO
+  document.getElementById('orderFormModal').style.display = 'block'; // PHIR FORM KOLO
 }
 function closeOrderForm(){
   document.getElementById('orderFormModal').style.display = 'none';
@@ -294,7 +299,6 @@ function sendOrderToSheet() {
     updateCart();
     displayProducts();
     closeOrderForm();
-    toggleCart();
   })
 .catch(err => alert('Error placing order. Please try again.'));
 }
