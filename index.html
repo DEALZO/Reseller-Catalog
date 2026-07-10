@@ -14,8 +14,8 @@
 .cart-icon { position: relative; cursor: pointer; font-size: 20px; }
 .cart-count { position: absolute; top: -8px; right: -10px; background: red; color: white; font-size: 12px; padding: 2px 6px; border-radius: 50%; }
 
-.swiper { width: 100%; height: 200px; }
-.swiper-slide img { width: 100%; height: 200px; object-fit: cover; }
+.swiper { width: 100%; height: 250px; margin-bottom: 10px; } /* HEIGHT 250 KI */
+.swiper-slide img { width: 100%; height: 250px; object-fit: cover; }
 
 .filter-bar { display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
@@ -41,7 +41,7 @@
 .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
 
 .cart-sidebar {
-    position: fixed; right: -100%; top: 0; width: 100%; height: 100vh; /* MOBILE FIX */
+    position: fixed; right: -100%; top: 0; width: 100%; height: 100vh;
     background: white; box-shadow: -2px 0 10px rgba(0,0,0,0.2); transition: right 0.3s ease; z-index: 1001;
     padding: 0; display: flex; flex-direction: column;
 }
@@ -62,7 +62,7 @@
 
 /* DESKTOP KE LIYE */
 @media (min-width: 769px){
- .cart-sidebar{ width: 320px; right: -350px; }
+.cart-sidebar{ width: 320px; right: -350px; }
 }
 </style>
 </head>
@@ -76,11 +76,15 @@
   </div>
 </header>
 
-<div class="swiper"><div class="swiper-wrapper">
-  <div class="swiper-slide"><img src="https://i.postimg.cc/jjz0wGr9/Chat-GPT-Image-Jul-10-2026-06-20-21-PM.png" alt="Superb Deals"></div>
-  <div class="swiper-slide"><img src="https://i.postimg.cc/zfnZb914/6c1318bb-3c5a-447e-b2da-945dbb0fbee0.png" alt="Mix Products"></div>
-  <div class="swiper-slide"><img src="https://i.postimg.cc/sgGRyMHr/fe0914c6-5673-4f3f-9b7e-17584e62e461.png" alt="Mega Sale"></div>
-</div></div>
+<!-- BANNER START -->
+<div class="swiper">
+  <div class="swiper-wrapper">
+    <div class="swiper-slide"><img src="https://i.postimg.cc/jjz0wGr9/Chat-GPT-Image-Jul-10-2026-06-20-21-PM.png" alt="Superb Deals"></div>
+    <div class="swiper-slide"><img src="https://i.postimg.cc/zfnZb914/6c1318bb-3c5a-447e-b2da-945dbb0fbee0.png" alt="Mix Products"></div>
+    <div class="swiper-slide"><img src="https://i.postimg.cc/sgGRyMHr/fe0914c6-5673-4f3f-9b7e-17584e62e461.png" alt="Mega Sale"></div>
+  </div>
+</div>
+<!-- BANNER END -->
 
 <div class="filter-bar" id="filterBar"></div>
 <div class="grid" id="grid"><div class="loading">Loading products...</div></div>
@@ -138,7 +142,11 @@ let currentProduct = null;
 let currentCategory = 'All';
 let cart = [];
 
-const swiper = new Swiper('.swiper', { loop: true, autoplay: { delay: 3000 } });
+// SWIPER INIT
+const swiper = new Swiper('.swiper', {
+  loop: true,
+  autoplay: { delay: 3000, disableOnInteraction: false }
+});
 
 async function loadProducts() {
   try {
@@ -260,11 +268,10 @@ function updateCart() {
   document.getElementById('cartTotal').innerText = cart.reduce((a,b)=>a + Number(b.price)*b.qty, 0);
 }
 
-// FINAL FIXED FUNCTION
 function showOrderForm(){
   if(cart.length === 0) return alert('Cart is empty');
-  document.getElementById('cartSidebar').classList.remove('active'); // CART FORCE BAND
-  setTimeout(() => { // 300ms BAAD FORM KOLO
+  document.getElementById('cartSidebar').classList.remove('active');
+  setTimeout(() => {
     document.getElementById('orderFormModal').style.display = 'block';
   }, 300);
 }
