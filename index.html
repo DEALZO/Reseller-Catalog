@@ -22,13 +22,24 @@
 .filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
 .filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
-.card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; cursor: pointer; }
+.card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; cursor: pointer; display: flex; flex-direction: column; } /* FIX: flex add kia */
 .card:hover { transform: translateY(-3px); }
 .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; background: #eee; }
-.card h3 { font-size: 14px; margin: 8px 0 4px; min-height: 40px; line-height: 1.3; } /* CHANGE 1: 2 line height */
+.card h3 {
+    font-size: 14px;
+    margin: 8px 0 4px;
+    line-height: 1.4;
+    min-height: 38px; /* 2 lines ke liye */
+    /* TITLE FULL SHOW KE LIYE YE 4 LINES ADD KI */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 2 lines tak show karega */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: normal;
+}
 .card.cat { font-size: 12px; color: #666; margin: 0 0 4px 0; }
-.card p.price { color: #2874f0; font-weight: bold; margin: 0 0 8px 0; font-size: 15px; } /* CHANGE 2: price class */
-.btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; }
+.card p.price { color: #2874f0; font-weight: bold; margin: auto 0 8px 0; font-size: 15px; } /* FIX: margin auto add kia taake button neeche rahe */
+.btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; margin-top: auto; } /* FIX: margin-top auto */
 .btn-add.added{ background: #dc3545; }
 .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
 
@@ -156,8 +167,7 @@ function applySearch() {
   displayProducts();
 }
 
-function truncate(text, n){ return (text.length > n)? text.substr(0, n-1) + '...' : text; } // CHANGE 3: ye function add
-
+// FIX: truncate function hata diya taake pura title aaye
 function displayProducts() {
   const grid = document.getElementById('grid');
   if(filteredProducts.length === 0){ grid.innerHTML = '<div class="loading">No products found</div>'; return; }
@@ -165,7 +175,7 @@ function displayProducts() {
     const inCart = cart.find(item => item.id == p.id);
     const btnText = inCart? 'Remove' : 'Add to Cart';
     const btnClass = inCart? 'btn-add added' : 'btn-add';
-    const title = truncate(p['productname'] || '', 50); // CHANGE 4: 50 chars limit
+    const title = p['productname'] || ''; // FIX: truncate hata diya
 
     return `
     <div class="card" onclick="window.location.href='product.html?id=${p.id}'">
