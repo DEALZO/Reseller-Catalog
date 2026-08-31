@@ -22,24 +22,23 @@
 .filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
 .filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
-.card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; cursor: pointer; display: flex; flex-direction: column; height: 100%; } /* FIX: flex add */
+.card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; cursor: pointer; display: flex; flex-direction: column; height: 100%; }
 .card:hover { transform: translateY(-3px); }
 .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; background: #eee; }
 .card h3 {
     font-size: 14px;
-    margin: 8px 0 4px;
+    margin: 8px 0 8px; /* neeche margin barha di */
     line-height: 1.4;
-    /* TITLE 2 LINE SHOW KE LIYE YE CODE */
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* 2 lines. 3 chahiye to 3 kar do */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-height: 38px; /* 2 line ki jagah */
+    font-weight: 600;
+    /* PURA TITLE SHOW KE LIYE */
+    white-space: normal;
+    overflow: visible;
+    height: auto;
+    min-height: auto;
 }
-.card.cat { font-size: 12px; color: #666; margin: 0 0 4px 0; }
-.card p.price { color: #2874f0; font-weight: bold; margin: auto 0 8px 0; font-size: 15px; } /* FIX: auto margin */
-.btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; margin-top: auto; } /* FIX: button neeche */
+.card.cat { display: none; } /* FIX: Category hide kar di */
+.card p.price { color: #2874f0; font-weight: bold; margin: auto 0 8px 0; font-size: 15px; }
+.btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; margin-top: auto; }
 .btn-add.added{ background: #dc3545; }
 .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
 
@@ -167,7 +166,6 @@ function applySearch() {
   displayProducts();
 }
 
-// FIX: truncate function bilkul hata diya
 function displayProducts() {
   const grid = document.getElementById('grid');
   if(filteredProducts.length === 0){ grid.innerHTML = '<div class="loading">No products found</div>'; return; }
@@ -175,13 +173,13 @@ function displayProducts() {
     const inCart = cart.find(item => item.id == p.id);
     const btnText = inCart? 'Remove' : 'Add to Cart';
     const btnClass = inCart? 'btn-add added' : 'btn-add';
-    const title = p['productname'] || ''; // FIX: direct pura title
+    const title = p['productname'] || '';
 
     return `
     <div class="card" onclick="window.location.href='product.html?id=${p.id}'">
       <img src="${p.image1 || ''}">
       <h3>${title}</h3>
-      <p class="cat">${p.category || ''}</p>
+      <p class="cat">${p.category || ''}</p> <!-- Ye hide ho jayegi CSS se -->
       <p class="price">Rs ${p.price || '0'}</p>
       <button class="${btnClass}" onclick='event.stopPropagation(); toggleCartItem(${JSON.stringify(p).replace(/'/g, "&apos;")})'>${btnText}</button>
     </div>
