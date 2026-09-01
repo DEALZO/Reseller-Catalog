@@ -10,47 +10,46 @@
   header { background: #2874f0; color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 999; }
   header h1 { font-size: 20px; margin: 0; font-weight: bold; }
   header h1 a{color:white; text-decoration:none;}
-.header-right { display: flex; gap: 15px; align-items: center; }
-.search-box input { padding: 8px 12px; border-radius: 20px; border: none; width: 180px; }
-.cart-icon { position: relative; cursor: pointer; font-size: 20px; }
-.cart-count { position: absolute; top: -8px; right: -10px; background: red; color: white; font-size: 12px; padding: 2px 6px; border-radius: 50%; }
+ .header-right { display: flex; gap: 15px; align-items: center; }
+ .search-box input { padding: 8px 12px; border-radius: 20px; border: none; width: 180px; }
+ .cart-icon { position: relative; cursor: pointer; font-size: 20px; }
+ .cart-count { position: absolute; top: -8px; right: -10px; background: red; color: white; font-size: 12px; padding: 2px 6px; border-radius: 50%; }
 
-.swiper { width: 100%!important; height: auto!important; margin-bottom: 10px; }
-.swiper-slide img { width: 100%!important; height: auto!important; aspect-ratio: 3 / 1!important; object-fit: contain!important; display: block; }
+ .swiper { width: 100%!important; height: auto!important; margin-bottom: 10px; }
+ .swiper-slide img { width: 100%!important; height: auto!important; aspect-ratio: 3 / 1!important; object-fit: contain!important; display: block; }
 
-.filter-bar { display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
-.filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 15px; }
-.card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; cursor: pointer; display: flex; flex-direction: column; height: 100%; }
-.card:hover { transform: translateY(-3px); }
-.card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; background: #eee; }
-.card h3 { font-size: 14px; margin: 8px 0 4px; line-height: 1.4; white-space: normal; word-break: break-word; min-height: 40px; } /* TITLE FULL */
-.card.cat { font-size: 12px; color: #666; margin: 0 0 4px 0; }
-.card p.price { color: #2874f0; font-weight: bold; margin: auto 0 8px 0; font-size: 15px; }
-.btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; margin-top: auto; }
-.btn-add.added{ background: #dc3545; }
-.loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
+ .filter-bar { display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+ .filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
+ .filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
+ .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 15px; }
+ .card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; cursor: pointer; display: flex; flex-direction: column; height: 100%; }
+ .card:hover { transform: translateY(-3px); }
+ .card img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; background: #eee; }
+ .card h3 { font-size: 14px; margin: 8px 0 8px; line-height: 1.4; font-weight: 600; white-space: normal; word-break: break-word; min-height: 45px; } /* TITLE FULL */
+ .card p.price { color: #2874f0; font-weight: bold; margin: auto 0 8px 0; font-size: 16px; }
+ .btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; margin-top: auto; }
+ .btn-add.added{ background: #dc3545; }
+ .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
 
-.cart-sidebar { position: fixed; right: -100%; top: 0; width: 100%; height: 100vh; background: white; box-shadow: -2px 0 10px rgba(0,0,0,0.2); transition: right 0.3s ease; z-index: 1001; padding: 0; display: flex; flex-direction: column; }
-.cart-sidebar.active { right: 0; }
-.cart-sidebar.close{ padding: 15px 20px 0 20px; text-align: right; font-size:24px; cursor:pointer;}
-.cart-sidebar h2{ padding: 0 20px 10px 20px; margin:0; border-bottom:1px solid #eee; flex-shrink: 0; }
+ .cart-sidebar { position: fixed; right: -100%; top: 0; width: 100%; height: 100vh; background: white; box-shadow: -2px 0 10px rgba(0,0,0,0.2); transition: right 0.3s ease; z-index: 1001; padding: 0; display: flex; flex-direction: column; }
+ .cart-sidebar.active { right: 0; }
+ .cart-sidebar.close{ padding: 15px 20px 0 20px; text-align: right; font-size:24px; cursor:pointer;}
+ .cart-sidebar h2{ padding: 0 20px 10px 20px; margin:0; border-bottom:1px solid #eee; flex-shrink: 0; }
   #cartItems{ flex: 1; overflow-y: auto; padding: 15px 20px; }
-.cart-item { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; align-items: center; }
-.cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
-.cart-item-info { flex: 1; }
-.cart-item-info p { margin: 2px 0; }
-.remove-btn { background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 16px; }
-.cart-total { font-weight: bold; font-size: 18px; margin: 0; padding: 15px 20px; border-top: 1px solid #eee; flex-shrink: 0; }
-.btn-order { background: #2874f0; color: white; border: none; padding: 12px; width: calc(100% - 40px); border-radius: 6px; font-size: 16px; cursor: pointer; margin: 0 20px 20px 20px; flex-shrink: 0; }
+ .cart-item { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; align-items: center; }
+ .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
+ .cart-item-info { flex: 1; }
+ .cart-item-info p { margin: 2px 0; font-size: 14px; }
+ .remove-btn { background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+ .cart-total { font-weight: bold; font-size: 18px; margin: 0; padding: 15px 20px; border-top: 1px solid #eee; flex-shrink: 0; }
+ .btn-order { background: #2874f0; color: white; border: none; padding: 12px; width: calc(100% - 40px); border-radius: 6px; font-size: 16px; cursor: pointer; margin: 0 20px 20px 20px; flex-shrink: 0; }
 
-.order-form input,.order-form textarea{ width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
-.order-form label{ font-size: 14px; font-weight: bold; margin-bottom: 5px; display: block; }
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1002; }
-.modal-content { background: white; width: 90%; max-width: 500px; margin: 50px auto; border-radius: 10px; padding: 20px; position: relative; max-height: 80vh; overflow-y: auto; }
+ .order-form input,.order-form textarea{ width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 14px; }
+ .order-form label{ font-size: 14px; font-weight: bold; margin-bottom: 5px; display: block; }
+ .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1002; }
+ .modal-content { background: white; width: 90%; max-width: 500px; margin: 50px auto; border-radius: 10px; padding: 20px; position: relative; max-height: 80vh; overflow-y: auto; }
 
-  @media (min-width: 769px){.cart-sidebar{ width: 320px; right: -350px; } }
+  @media (min-width: 769px){.cart-sidebar{ width: 350px; right: -400px; } }
 </style>
 </head>
 <body>
@@ -86,17 +85,21 @@
   <div class="modal-content order-form">
     <span class="close" onclick="closeOrderForm()">&times;</span>
     <h2>Customer Details</h2>
-    <label>Name *</label><input type="text" id="custName" placeholder="Enter your name" required>
-    <label>WhatsApp Number *</label><input type="text" id="custNumber" placeholder="03xx-xxxxxxx" required>
-    <label>Additional Number</label><input type="text" id="custAltNumber" placeholder="Optional">
-    <label>Full Address *</label><textarea id="custAddress" rows="3" placeholder="House, Street, City" required></textarea>
+    <label>Name *</label>
+    <input type="text" id="custName" placeholder="Enter your name" required>
+    <label>WhatsApp Number *</label>
+    <input type="text" id="custNumber" placeholder="03xx-xxxxxxx" required>
+    <label>Additional Number</label>
+    <input type="text" id="custAltNumber" placeholder="Optional">
+    <label>Full Address *</label>
+    <textarea id="custAddress" rows="3" placeholder="House, Street, City" required></textarea>
     <button class="btn-order" onclick="sendOrderToSheet()">Confirm Order</button>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTs1Tzfl93ZoAyrQRAF-RBq5lx6umpdDUnj8K3AT9LQx_FybHGRfe4tv9moie4QZ6GHpR5rSp81Eqx6/pub?output=csv";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTs1Tzfl93ZoAyrQRAF-RBq5lx6umpdDUnj8K3AT9LQx_FybHGRfe4tv9moie4QZ6GHpR5rSp81Eqx6/pub?output=csv&t=" + new Date().getTime();
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz-iUT2I_Jxpt8PlGwk4qPimyLQXSH59QPGqHHNgs7_hv2jIiwV27_z-SXDXyLZdvAP_w/exec";
 
 let products = [];
@@ -108,7 +111,7 @@ const swiper = new Swiper('.swiper', { loop: true, autoplay: { delay: 3000, disa
 
 async function loadProducts() {
   try {
-    const response = await fetch(CSV_URL + '?t=' + new Date().getTime());
+    const response = await fetch(CSV_URL);
     const csvText = await response.text();
     products = csvToJSON(csvText);
     filteredProducts = products;
@@ -116,24 +119,27 @@ async function loadProducts() {
     displayProducts();
     updateCart();
   } catch (err) {
-    document.getElementById('grid').innerHTML = '<div class="loading">Error loading products.</div>';
+    document.getElementById('grid').innerHTML = '<div class="loading">Error loading products. Check CSV Link & Internet</div>';
   }
 }
 
-// SAFE PARSER - Comma wala title bhi nahi todega
+// SAFE PARSER - "Product Name" with space bhi read karega
 function csvToJSON(csv) {
   csv = csv.replace(/^\uFEFF/, '');
   const lines = csv.split('\n').filter(line => line.trim());
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '').toLowerCase().replace(/\s+/g, ''));
+  const headers = lines[0].split(',').map(h => h.trim());
+
   return lines.slice(1).map((line, i) => {
     const values = [];
-    let current = ''; let inQuotes = false;
+    let current = '';
+    let inQuotes = false;
     for(let char of line){
       if(char === '"'){ inQuotes =!inQuotes; }
       else if(char === ',' &&!inQuotes){ values.push(current); current = ''; }
       else{ current += char; }
     }
     values.push(current);
+
     let obj = {id: i};
     headers.forEach((h, j) => { obj[h] = (values[j] || '').trim(); });
     return obj;
@@ -141,7 +147,7 @@ function csvToJSON(csv) {
 }
 
 function buildFilters() {
-  const categories = ['All',...new Set(products.map(p => p.category).filter(Boolean))];
+  const categories = ['All',...new Set(products.map(p => p.Category).filter(Boolean))];
   document.getElementById('filterBar').innerHTML = categories.map(cat =>
     `<button class="filter-btn ${cat === currentCategory? 'active' : ''}" onclick="filterProducts('${cat}')">${cat}</button>`
   ).join('');
@@ -153,14 +159,13 @@ document.getElementById('searchInput').addEventListener('keyup', applySearch);
 function applySearch() {
   const search = document.getElementById('searchInput').value.toLowerCase();
   filteredProducts = products.filter(p => {
-    const matchCat = currentCategory === 'All' || p.category === currentCategory;
-    const matchSearch = (p.productname || '').toLowerCase().includes(search);
+    const matchCat = currentCategory === 'All' || p.Category === currentCategory;
+    const matchSearch = (p['Product Name'] || '').toLowerCase().includes(search);
     return matchCat && matchSearch;
   });
   displayProducts();
 }
 
-// NO TRUNCATE - TITLE FULL
 function displayProducts() {
   const grid = document.getElementById('grid');
   if(filteredProducts.length === 0){ grid.innerHTML = '<div class="loading">No products found</div>'; return; }
@@ -171,10 +176,9 @@ function displayProducts() {
 
     return `
     <div class="card" onclick="window.location.href='product.html?id=${p.id}'">
-      <img src="${p.image1 || ''}" onerror="this.src='https://via.placeholder.com/150'">
-      <h3>${p['productname'] || ''}</h3>
-      <p class="cat">${p.category || ''}</p>
-      <p class="price">Rs ${p.price || '0'}</p>
+      <img src="${p.Image1 || ''}" onerror="this.src='https://via.placeholder.com/160?text=No+Image'">
+      <h3>${p['Product Name'] || ''}</h3>
+      <p class="price">Rs ${p.Price || '0'}</p>
       <button class="${btnClass}" onclick='event.stopPropagation(); toggleCartItem(${JSON.stringify(p).replace(/'/g, "&apos;")})'>${btnText}</button>
     </div>
   `}).join('');
@@ -200,15 +204,15 @@ function updateCart() {
   document.getElementById('cartCount').innerText = cart.reduce((a,b)=>a+b.qty,0);
   document.getElementById('cartItems').innerHTML = cart.map(item=>`
     <div class="cart-item">
-      <img src="${item.image1}">
+      <img src="${item.Image1}">
       <div class="cart-item-info">
-        <p>${item.productname}</p>
-        <p>Rs ${item.price} x ${item.qty}</p>
+        <p>${item['Product Name']}</p>
+        <p>Rs ${item.Price} x ${item.qty}</p>
       </div>
       <button class="remove-btn" onclick="removeFromCart('${item.id}')">🗑️</button>
     </div>
   `).join('');
-  document.getElementById('cartTotal').innerText = cart.reduce((a,b)=>a + Number(b.price)*b.qty, 0);
+  document.getElementById('cartTotal').innerText = cart.reduce((a,b)=>a + Number(b.Price)*b.qty, 0);
 }
 
 function showOrderForm(){
@@ -225,7 +229,7 @@ function sendOrderToSheet() {
   const address = document.getElementById('custAddress').value;
   if(!name ||!number ||!address) return alert('Please fill Name, Number and Address');
 
-  const orderData = { customer: {name, number, altNumber, address}, items: cart.map(item => ({ name: item.productname, qty: item.qty, price: item.price, total: Number(item.price) * item.qty })) };
+  const orderData = { customer: {name, number, altNumber, address}, items: cart.map(item => ({ name: item['Product Name'], qty: item.qty, price: item.Price, total: Number(item.Price) * item.qty })) };
   fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(orderData) })
 .then(() => { alert('Order Placed Successfully!'); cart = []; localStorage.removeItem('cart'); updateCart(); displayProducts(); closeOrderForm(); })
 .catch(err => alert('Error placing order. Please try again.'));
