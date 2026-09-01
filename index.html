@@ -21,21 +21,21 @@
 .filter-bar { display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
 .filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 15px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 15px; }
 .card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; cursor: pointer; display: flex; flex-direction: column; height: 100%; }
 .card:hover { transform: translateY(-3px); }
-.card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; background: #eee; }
+.card img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; background: #eee; }
 .card h3 {
-    font-size: 15px;
+    font-size: 14px;
     margin: 8px 0 8px;
     line-height: 1.4;
     font-weight: 600;
-    white-space: normal;
+    white-space: normal; /* FULL TITLE WRAP */
     word-break: break-word;
-    min-height: auto;
+    min-height: 40px;
 }
-.card p.price { color: #2874f0; font-weight: bold; margin: auto 0 8px 0; font-size: 15px; }
-.btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; margin-top: auto; }
+.card p.price { color: #2874f0; font-weight: bold; margin: auto 0 8px 0; font-size: 16px; }
+.btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; margin-top: auto; }
 .btn-add.added{ background: #dc3545; }
 .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
 
@@ -47,7 +47,7 @@
 .cart-item { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; align-items: center; }
 .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
 .cart-item-info { flex: 1; }
-.cart-item-info p { margin: 2px 0; }
+.cart-item-info p { margin: 2px 0; font-size: 14px; }
 .remove-btn { background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 16px; }
 .cart-total { font-weight: bold; font-size: 18px; margin: 0; padding: 15px 20px; border-top: 1px solid #eee; flex-shrink: 0; }
 .btn-order { background: #2874f0; color: white; border: none; padding: 12px; width: calc(100% - 40px); border-radius: 6px; font-size: 16px; cursor: pointer; margin: 0 20px 20px 20px; flex-shrink: 0; }
@@ -57,7 +57,7 @@
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1002; }
 .modal-content { background: white; width: 90%; max-width: 500px; margin: 50px auto; border-radius: 10px; padding: 20px; position: relative; max-height: 80vh; overflow-y: auto; }
 
-  @media (min-width: 769px){.cart-sidebar{ width: 320px; right: -350px; } }
+  @media (min-width: 769px){.cart-sidebar{ width: 350px; right: -400px; } }
 </style>
 </head>
 <body>
@@ -127,25 +127,30 @@ async function loadProducts() {
     displayProducts();
     updateCart();
   } catch (err) {
-    document.getElementById('grid').innerHTML = '<div class="loading">Error loading products.</div>';
+    document.getElementById('grid').innerHTML = '<div class="loading">Error loading products. Check CSV Link</div>';
   }
 }
 
-// FIXED: Code 1 jaisa simple parser + Code 2 jaisa ID
+// SAFE PARSER - Title pura + Comma handle
 function csvToJSON(csv) {
   csv = csv.replace(/^\uFEFF/, '');
   const lines = csv.split('\n').filter(line => line.trim());
-
-  // Headers - handles "text, with comma"
-  const headers = lines[0].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(h => h.trim().replace(/"/g, ''));
-
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  
   return lines.slice(1).map((line, i) => {
-    // Values - handles "text, with comma"
-    const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+    const values = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for(let char of line){
+      if(char === '"'){ inQuotes =!inQuotes; }
+      else if(char === ',' &&!inQuotes){ values.push(current); current = ''; }
+      else{ current += char; }
+    }
+    values.push(current);
+    
     let obj = {id: i};
-    headers.forEach((h, j) => {
-      obj[h] = (values[j] || '').trim().replace(/"/g, '');
-    });
+    headers.forEach((h, j) => { obj[h] = (values[j] || '').trim(); });
     return obj;
   });
 }
@@ -170,7 +175,7 @@ function applySearch() {
   displayProducts();
 }
 
-// FIXED: No truncate, No category line
+// FULL TITLE - NO TRUNCATE
 function displayProducts() {
   const grid = document.getElementById('grid');
   if(filteredProducts.length === 0){ grid.innerHTML = '<div class="loading">No products found</div>'; return; }
@@ -178,11 +183,11 @@ function displayProducts() {
     const inCart = cart.find(item => item.id == p.id);
     const btnText = inCart? 'Remove' : 'Add to Cart';
     const btnClass = inCart? 'btn-add added' : 'btn-add';
-    const title = p['Product Name'] || ''; // FULL TITLE DIRECT
+    const title = p['Product Name'] || ''; 
 
     return `
     <div class="card" onclick="window.location.href='product.html?id=${p.id}'">
-      <img src="${p.Image1 || ''}">
+      <img src="${p.Image1 || ''}" onerror="this.src='https://via.placeholder.com/160'">
       <h3>${title}</h3>
       <p class="price">Rs ${p.Price || '0'}</p>
       <button class="${btnClass}" onclick='event.stopPropagation(); toggleCartItem(${JSON.stringify(p).replace(/'/g, "&apos;")})'>${btnText}</button>
