@@ -21,26 +21,29 @@
 .filter-bar { display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .filter-btn { padding: 8px 16px; border: 1px solid #ddd; border-radius: 20px; background: white; cursor: pointer; white-space: nowrap; font-size: 14px; }
 .filter-btn.active { background: #2874f0; color: white; border-color: #2874f0; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 15px; align-items: start; } /* FIX 1: align-items: start add kiya */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 15px; }
 
-.card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; cursor: pointer; } /* FIX 2: display:flex hata diya */
+  /* FIX: SAB CARD KI HEIGHT BARABAR */
+.card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; cursor: pointer; display: flex; flex-direction: column; height: 100%; }
 .card:hover { transform: translateY(-3px); }
 .card img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; background: #eee; }
 
- /* FIX 3: TITLE FULL WALA - YEHI ASLI MASLA THA */
+ /* FIX: TITLE MAX 3 LINES - ZYADA HO TO... */
 .card h3 {
    font-size: 14px;
    margin: 8px 0 8px;
    line-height: 1.4;
    font-weight: 600;
-   white-space: normal;
-   word-break: break-word;
-   height: auto!important; /* zabardasti height khatam */
-   min-height: 0!important; /* zabardasti min-height khatam */
+   height: 60px; /* 3 lines * 1.4 line-height * 14px font = 58.8px */
+   overflow: hidden;
+   text-overflow: ellipsis;
+   display: -webkit-box;
+   -webkit-line-clamp: 3; /* 3 line se zyada nahi */
+   -webkit-box-orient: vertical;
  }
 
-.card p.price { color: #2874f0; font-weight: bold; margin: 8px 0 8px 0; font-size: 16px; } /* margin change */
-.btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; } /* margin-top:auto hata diya */
+.card p.price { color: #2874f0; font-weight: bold; margin: auto 0 8px 0; font-size: 16px; }
+.btn-add { background: #2874f0; color: white; border: none; width: 100%; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: 0.3s; margin-top: auto; }
 .btn-add.added{ background: #dc3545; }
 .loading { text-align: center; padding: 50px; font-size: 18px; color: #666; }
 
